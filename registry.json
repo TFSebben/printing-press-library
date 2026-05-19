@@ -1663,6 +1663,30 @@
       }
     },
     {
+      "name": "nylas",
+      "category": "productivity",
+      "api": "Nylas",
+      "description": "Every Nylas API, plus a local SQLite mirror, cross-grant search, and confirm-by-hash sending no other Nylas tool has.",
+      "path": "library/productivity/nylas",
+      "printer": "natekettles",
+      "printer_name": "Nathan Kettles",
+      "mcp": {
+        "binary": "nylas-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 211,
+        "public_tool_count": 1,
+        "auth_type": "bearer_token",
+        "env_vars": [
+          "NYLAS_API_KEY"
+        ],
+        "mcp_ready": "full",
+        "spec_format": "openapi3"
+      }
+    },
+    {
       "name": "open-meteo",
       "category": "other",
       "api": "Open-Meteo",
@@ -2243,6 +2267,30 @@
         ],
         "mcp_ready": "full",
         "spec_format": "internal"
+      }
+    },
+    {
+      "name": "sendgrid",
+      "category": "productivity",
+      "api": "Twilio Sendgrid",
+      "description": "Every Twilio SendGrid endpoint, plus offline suppression diffs, stats time-series rollups, and a template-variable...",
+      "path": "library/productivity/sendgrid",
+      "printer": "natekettles",
+      "printer_name": "Nathan Kettles",
+      "mcp": {
+        "binary": "sendgrid-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 391,
+        "public_tool_count": 0,
+        "auth_type": "bearer_token",
+        "env_vars": [
+          "SENDGRID_API_KEY"
+        ],
+        "mcp_ready": "full",
+        "spec_format": "openapi3"
       }
     },
     {
