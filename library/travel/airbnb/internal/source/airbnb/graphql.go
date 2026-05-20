@@ -8,8 +8,10 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/mvanhorn/printing-press-library/library/travel/airbnb/internal/auth"
 )
@@ -18,7 +20,47 @@ const (
 	wishlistIndexHash = "b8b421d802c399b55fb6ac1111014807a454184ad38f198365beb7836c018c18"
 	wishlistItemsHash = "c0f9d9474bb20eb7af2f94f8e022750a5ed9b7437613e1d9aa91aadea87e4467"
 	bookItHash        = "5560c774d764520fc721f6dffca10d9cff03b25e9907478ded8530caf679d716"
+	// Public web client API key embedded on every airbnb.com SSR page in
+	// `"api_config":{"key":"..."}`. This is the well-known constant every
+	// public scraper uses (see HAR captures under
+	// .manuscripts/.../discovery/airbnb/airbnb-capture.har). The scrape
+	// helper below tries to read a fresh value at process startup, but
+	// falls back to this constant if the scrape fails.
+	airbnbDefaultAPIKey = "d306zoyjsyarp7ifhu67rjxn52tv0t20"
 )
+
+// apiKeyRe finds the public web key in airbnb.com SSR HTML.
+var apiKeyRe = regexp.MustCompile(`"api_config"\s*:\s*\{\s*"key"\s*:\s*"([a-z0-9]{20,})"`)
+
+var (
+	apiKeyOnce sync.Once
+	apiKeyVal  string
+)
+
+// resolveAPIKey returns the current Airbnb web public API key. It scrapes
+// the homepage SSR HTML on first use (cached for the process lifetime),
+// and falls back to the well-known constant if the scrape fails.
+func (c *Client) resolveAPIKey(ctx context.Context) string {
+	apiKeyOnce.Do(func() {
+		apiKeyVal = airbnbDefaultAPIKey
+		body, err := c.do(ctx, "GET", airbnbBase+"/", airbnbUA, nil, nil)
+		if err != nil {
+			return
+		}
+		if m := apiKeyRe.FindSubmatch(body); len(m) >= 2 {
+			apiKeyVal = string(m[1])
+		}
+	})
+	return apiKeyVal
+}
+
+// parseAPIKey is the pure regex extractor, exposed for unit tests.
+func parseAPIKey(body []byte) string {
+	if m := apiKeyRe.FindSubmatch(body); len(m) >= 2 {
+		return string(m[1])
+	}
+	return ""
+}
 
 func WishlistList(ctx context.Context) ([]Wishlist, error) {
 	var root any
@@ -96,7 +138,19 @@ func (c *Client) graphQLGet(ctx context.Context, path string, params url.Values,
 	}
 	q.Set("extensions", `{"persistedQuery":{"version":1,"sha256Hash":"`+path[strings.LastIndex(path, "/")+1:]+`"}}`)
 	u.RawQuery = q.Encode()
-	data, err := c.do(ctx, "GET", u.String(), airbnbUA, nil, map[string]string{"Accept": "application/json"})
+	// The Airbnb GraphQL gateway rejects requests without an api key with
+	// {error:"invalid_key", error_code:400}. Send the public web key plus
+	// the companion headers every real-world request carries (per the HAR
+	// in .manuscripts/.../discovery/airbnb/airbnb-capture.har) — without
+	// them, Airbnb's heuristics flag the call as non-browser.
+	headers := map[string]string{
+		"Accept":                           "application/json",
+		"X-Airbnb-API-Key":                 c.resolveAPIKey(ctx),
+		"X-Airbnb-GraphQL-Platform":        "web",
+		"X-Airbnb-GraphQL-Platform-Client": "minimalist-niobe",
+		"X-Airbnb-Supports-Airlock-V2":     "true",
+	}
+	data, err := c.do(ctx, "GET", u.String(), airbnbUA, nil, headers)
 	if err != nil {
 		return err
 	}
