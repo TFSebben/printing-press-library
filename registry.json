@@ -4,8 +4,8 @@
     {
       "name": "adminbyrequest",
       "category": "devices",
-      "api": "Adminbyrequest",
-      "description": "Every Admin By Request portal action, plus a local SQLite mirror of audit, events, inventory and requests for ad-hoc...",
+      "api": "Admin By Request",
+      "description": "Sync Admin By Request audit, event, inventory, and elevation-request data for approvals, quota checks, and admin-risk reports.",
       "search_terms": [
         "adminbyrequest",
         "Admin By Request",
@@ -209,7 +209,7 @@
       "name": "alaska-airlines",
       "category": "travel",
       "api": "Alaska Airlines",
-      "description": "Search Alaska Airlines flights, manage Atmos Rewards, and pre-build cart deeplinks for one-click checkout - all from...",
+      "description": "Search Alaska Airlines flights, manage Atmos Rewards data, and build checkout-ready cart links from the terminal.",
       "search_terms": [
         "alaska-airlines",
         "Alaska Airlines",
@@ -711,8 +711,8 @@
     {
       "name": "beehiiv",
       "category": "marketing",
-      "api": "Beehiiv",
-      "description": "Printing Press CLI for Beehiiv.",
+      "api": "beehiiv",
+      "description": "Manage beehiiv publications, subscribers, segments, posts, automations, and newsletter analytics from the terminal.",
       "search_terms": [
         "beehiiv",
         "beehiiv-pp-cli",
@@ -1256,7 +1256,7 @@
     {
       "name": "coingecko",
       "category": "payments",
-      "api": "Coingecko",
+      "api": "CoinGecko",
       "description": "CoinGecko public API for cryptocurrency data. Free tier, no API key required for basic endpoints.",
       "search_terms": [
         "coingecko",
@@ -1292,7 +1292,7 @@
       "name": "company-goat",
       "category": "developer-tools",
       "api": "Company GOAT",
-      "description": "One call across seven authoritative sources to research a startup's funding history (SEC Form D), engineering velocity (GitHub), HN mentions, legal entity (US/UK), and domain age. Compares competitors side-by-side and flags inconsistencies between public claims and filings.",
+      "description": "Look up startups across SEC Form D, GitHub, Hacker News, Companies House, YC, Wikidata, and DNS in one command. Built for scouts, founders, BD, and AI agents researching small/midsize startups.",
       "search_terms": [
         "company-goat",
         "company-goat-pp-cli",
@@ -1339,7 +1339,7 @@
       "name": "conduyt-crm",
       "category": "sales-and-crm",
       "api": "Conduyt CRM",
-      "description": "The Conduyt CRM API provides programmatic access to your CRM data including contacts, companies, deals, pipelines,...",
+      "description": "Manage Conduyt CRM contacts, deals, pipelines, automations, campaigns, invoices, and local insight reports from the terminal.",
       "search_terms": [
         "conduyt-crm",
         "Conduyt CRM",
@@ -1381,7 +1381,7 @@
       "name": "contact-goat",
       "category": "sales-and-crm",
       "api": "Contact GOAT",
-      "description": "Super LinkedIn for the terminal - search, enrich, and map warm-intro paths across LinkedIn (stickerdaniel/linkedin-mcp-server subprocess), Happenstance (Chrome cookie auth with Clerk JWT refresh), and Deepline (paid enrichment, hybrid subprocess+HTTP). Unified SQLite store powers warm-intro, coverage, and cross-source prospect commands no single tool has.",
+      "description": "Search, enrich, and map warm-introduction paths across LinkedIn, Happenstance, Deepline, and a unified local contacts store.",
       "search_terms": [
         "contact-goat",
         "Contact GOAT",
@@ -1522,7 +1522,7 @@
       "name": "digg",
       "category": "media-and-entertainment",
       "api": "Digg AI",
-      "description": "Tail the Digg AI 1000's news cycle from the terminal — read-only, with the full pipeline event stream and...",
+      "description": "Tail Digg's news cycle, GitHub feeds, and pipeline events from the terminal — read-only, with rank-history nobody else surfaces.",
       "search_terms": [
         "digg",
         "digg-pp-cli",
@@ -1590,7 +1590,7 @@
       "name": "digitalocean",
       "category": "cloud",
       "api": "DigitalOcean",
-      "description": "Printing Press CLI for Digitalocean.",
+      "description": "Manage DigitalOcean Droplets, Kubernetes, databases, firewalls, networking, billing, and other cloud resources from the terminal.",
       "search_terms": [
         "digitalocean",
         "digitalocean-pp-cli",
@@ -1947,7 +1947,7 @@
       "name": "edgar",
       "category": "other",
       "api": "SEC EDGAR",
-      "description": "An agent-native CLI for SEC EDGAR — six sanctioned endpoints, SQLite-cached filings with FTS5, and LODESTAR-shaped...",
+      "description": "Fetch SEC EDGAR filings, insider activity, XBRL facts, and cached filing search results with agent-friendly output.",
       "search_terms": [
         "edgar",
         "SEC EDGAR",
@@ -2032,8 +2032,8 @@
     {
       "name": "emailoctopus",
       "category": "marketing",
-      "api": "Emailoctopus",
-      "description": "Every EmailOctopus v2 endpoint, plus the cross-list joins, churn diffs, and rate-budgeted bulk operations the API...",
+      "api": "EmailOctopus",
+      "description": "Manage EmailOctopus lists, contacts, campaigns, automations, reports, and cross-list cleanup workflows from the terminal.",
       "search_terms": [
         "emailoctopus",
         "emailoctopus-pp-cli",
@@ -2700,8 +2700,8 @@
     {
       "name": "gohighlevel",
       "category": "sales-and-crm",
-      "api": "Gohighlevel",
-      "description": "The terminal for GoHighLevel. Bulk ops, dedup, and pipeline reports in seconds — local cache, agent-native JSON,...",
+      "api": "GoHighLevel",
+      "description": "Sync GoHighLevel CRM data for contacts, opportunities, pipelines, custom fields, tags, bulk operations, and funnel reports.",
       "search_terms": [
         "gohighlevel",
         "gohighlevel-pp-cli",
@@ -2944,8 +2944,8 @@
     {
       "name": "greatclips",
       "category": "other",
-      "api": "Greatclips",
-      "description": "First CLI for Great Clips Online Check-In: every endpoint shape and host route, ready for real calls once cookies...",
+      "api": "Great Clips",
+      "description": "Check Great Clips salon wait times, prepare Online Check-In requests, inspect route shapes, and track local wait history.",
       "search_terms": [
         "greatclips",
         "Great Clips",
@@ -3337,7 +3337,7 @@
     {
       "name": "kalshi",
       "category": "payments",
-      "api": "Kalshi",
+      "api": "Kalshi Trade Manual",
       "description": "Trade prediction markets, persist tick data, and answer category-level P&L questions Kalshi.com cannot.",
       "search_terms": [
         "kalshi",
@@ -3392,7 +3392,7 @@
       "name": "kit",
       "category": "marketing",
       "api": "Kit",
-      "description": "Printing Press CLI for Kit.",
+      "description": "Manage Kit subscribers, tags, forms, sequences, broadcasts, purchases, and email marketing automation data from the terminal.",
       "search_terms": [
         "kit",
         "kit-pp-cli",
@@ -3778,7 +3778,7 @@
       "name": "marianatek",
       "category": "productivity",
       "api": "Mariana Tek",
-      "description": "Every Mariana Tek booking feature, plus multi-tenant search, cancellation watching, and an offline class catalog no...",
+      "description": "Search Mariana Tek studio schedules, book classes, watch cancellations, and sync reservations into an offline class catalog.",
       "search_terms": [
         "marianatek",
         "Mariana Tek",
@@ -4149,7 +4149,7 @@
       "name": "nse-india",
       "category": "developer-tools",
       "api": "NSE India",
-      "description": "Every NSE equity data point in a single Go binary — live quotes, order book, filings, and a local SQLite store no...",
+      "description": "Fetch NSE India quotes, market status, order books, filings, indices, and cached equity analytics from the terminal.",
       "search_terms": [
         "nse-india",
         "NSE India",
@@ -4245,7 +4245,7 @@
       "name": "nvd",
       "category": "developer-tools",
       "api": "National Vulnerability Database",
-      "description": "The NVD is the U.S. government repository of standards-based vulnerability management data. Search CVEs by keyword, product (CPE name), CVE ID, or date range. Get CVSS scores, affected versions, references, and severity ratings. No API key required (optional for higher rate limits).",
+      "description": "The NVD is the U.S. government repository of standards-based vulnerability management data.",
       "search_terms": [
         "nvd",
         "National Vulnerability Database",
@@ -4522,7 +4522,7 @@
       "name": "openipa",
       "category": "developer-tools",
       "api": "IndicePA",
-      "description": "Il primo CLI per l'Indice delle Pubbliche Amministrazioni — lookup istantaneo di enti, PEC, codici IPA,...",
+      "description": "Search Italy's IndicePA for public administrations, PEC addresses, IPA codes, billing codes, and compliance details.",
       "search_terms": [
         "openipa",
         "IndicePA",
@@ -4570,7 +4570,7 @@
       "name": "openrouter",
       "category": "ai",
       "api": "OpenRouter",
-      "description": "Agent-first OpenRouter introspection — terse output for cron and AI agents (--agent and --llm modes), local SQLite...",
+      "description": "Inspect OpenRouter models, providers, credits, activity, and cost attribution with local caching and agent-friendly output.",
       "search_terms": [
         "openrouter",
         "openrouter-pp-cli",
@@ -4924,7 +4924,7 @@
       "name": "pdok-location",
       "category": "developer-tools",
       "api": "PDOK Location",
-      "description": "One Go binary for every Dutch location workflow — geocode, reverse-geocode, batch CSVs, full GeoJSON geometries,...",
+      "description": "Geocode Dutch addresses, reverse-geocode coordinates, convert RD/WGS84, and query PDOK location data with offline helpers.",
       "search_terms": [
         "pdok-location",
         "PDOK Location",
@@ -5562,8 +5562,8 @@
     {
       "name": "recipe-goat",
       "category": "food-and-dining",
-      "api": "Cross-site recipe aggregator (37 trusted sites: King Arthur, Serious Eats, Smitten Kitchen, AllRecipes, Food52, BBC Food, EatingWell, Food Network, and 29 more) + USDA FoodData Central",
-      "description": "Find the best version of any recipe across 37 trusted sites — trust-aware ranking weights real reader signal at 80% and editorial trust at 15% (curated chef/baker sites win tie-break over crowdsourced aggregators). Builds a local SQLite cookbook with pantry match, meal plans, cook log, substitutions, and USDA-backed nutrition backfill. Powered by Surf-Chrome HTTP transport — bypasses TLS-fingerprint bot detection that previously blocked Dotdash properties.",
+      "api": "Recipe GOAT",
+      "description": "Search trusted recipe sites, rank results, save a local cookbook, and enrich nutrition data with USDA FoodData Central.",
       "search_terms": [
         "recipe-goat",
         "Recipe GOAT",
@@ -5847,7 +5847,7 @@
       "name": "scrape-creators",
       "category": "developer-tools",
       "api": "Scrape Creators",
-      "description": "Scrape public social media data from the terminal — profiles, posts, videos, comments, ads, and transcripts across TikTok, Instagram, YouTube, Twitter/X, LinkedIn, Facebook, Reddit, Threads, Bluesky, Pinterest, Snapchat, Twitch, Kick, Truth Social, and 15+ link-in-bio / creator link services.",
+      "description": "The easiest way to scrape public social media data at scale. Extract profiles, posts, videos, comments, and more from TikTok, Instagram, YouTube, Twitter, LinkedIn, Facebook, Reddit, and 27+ platforms.",
       "search_terms": [
         "scrape-creators",
         "Scrape Creators",
@@ -6090,8 +6090,8 @@
     {
       "name": "servicetitan-pricebook",
       "category": "sales-and-crm",
-      "api": "Pricebook",
-      "description": "A focused per-module ServiceTitan CLI for the Pricebook — sync once, then audit markup, costs, vendor parts, and...",
+      "api": "ServiceTitan Pricebook",
+      "description": "Sync ServiceTitan Pricebook services, materials, equipment, vendors, markups, warranties, and cost-drift audits.",
       "search_terms": [
         "servicetitan-pricebook",
         "ServiceTitan Pricebook",
@@ -6157,8 +6157,8 @@
     {
       "name": "setlist-fm",
       "category": "media-and-entertainment",
-      "api": "Setlist Fm",
-      "description": "<p>",
+      "api": "setlist.fm",
+      "description": "Search setlist.fm artists, setlists, venues, cities, and concert histories through the setlist.fm API.",
       "search_terms": [
         "setlist-fm",
         "setlist.fm",
@@ -6699,7 +6699,7 @@
       "name": "substack-creator",
       "category": "media-and-entertainment",
       "api": "Substack Creator",
-      "description": "Every Substack feature, plus a local SQLite database, full-text search across years of writing, and the only...",
+      "description": "Manage Substack posts, drafts, subscribers, notes, comments, and cross-publication analytics from a local SQLite cache.",
       "search_terms": [
         "substack-creator",
         "Substack Creator",
@@ -6849,7 +6849,7 @@
       "name": "surgegraph",
       "category": "ai",
       "api": "Surgegraph Facade",
-      "description": "Every SurgeGraph workflow — research, write, publish, monitor — from the terminal or any agent, with a local...",
+      "description": "SurgeGraph is the Answer Engine Optimization (AEO) platform that tracks AI citations, scores pages for citation readiness, and one-click fixes the gaps — now every workflow runs from the terminal or any agent.",
       "search_terms": [
         "surgegraph",
         "Surgegraph Facade",
@@ -7676,8 +7676,8 @@
     {
       "name": "whoop",
       "category": "devices",
-      "api": "Whoop",
-      "description": "Printing Press CLI for Whoop.",
+      "api": "WHOOP",
+      "description": "Fetch WHOOP recovery, strain, sleep, workout, cycle, profile, and body-measurement data with OAuth-backed API access.",
       "search_terms": [
         "whoop",
         "whoop-pp-cli",
