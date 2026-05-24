@@ -1118,6 +1118,43 @@
       }
     },
     {
+      "name": "chrome-history",
+      "category": "productivity",
+      "api": "Chrome History",
+      "description": "Reverse-engineered from the hand-built chrome-history-pp-cli command/data shape",
+      "search_terms": [
+        "chrome-history",
+        "Chrome History",
+        "chrome-history-pp-cli",
+        "Query local Chrome browsing history from a snapshot index; no remote API spec.",
+        "Chrome Journeys Topic Clusters",
+        "journeys",
+        "Surfaces Chrome's own Journeys topic clusters from local history databases.",
+        "Session Timeline Reconstruction",
+        "timeline",
+        "Reconstructs session-level browsing timelines using timestamp gaps and device filters.",
+        "Rabbithole Drift Detection",
+        "rabbitholes",
+        "Detects sessions that drift from productive starts into distracting browsing patterns."
+      ],
+      "path": "library/productivity/chrome-history",
+      "printer": "vinnyp",
+      "printer_name": "Vinny Pasceri",
+      "mcp": {
+        "binary": "chrome-history-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 19,
+        "public_tool_count": 19,
+        "auth_type": "none",
+        "env_vars": [],
+        "mcp_ready": "full",
+        "spec_format": "sqlite"
+      }
+    },
+    {
       "name": "clarity",
       "category": "marketing",
       "api": "PP Clarity",
