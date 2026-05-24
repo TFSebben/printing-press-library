@@ -1637,6 +1637,36 @@
       }
     },
     {
+      "name": "delta-trip",
+      "category": "travel",
+      "api": "Delta Trip Management",
+      "description": "Look up and manage Delta Air Lines trips by confirmation number — view all flights, seats, baggage, upgrade...",
+      "search_terms": [
+        "delta-trip",
+        "Delta Trip Management",
+        "delta-trip-pp-cli",
+        "Connection Risk Scoring",
+        "trip layover",
+        "Score every layover in a trip as OK, TIGHT, or HIGH with a per-connection recommended action — in one command, without parsing the full flights table."
+      ],
+      "path": "library/travel/delta-trip",
+      "printer": "paulbockewitz",
+      "printer_name": "Paul Bockewitz",
+      "mcp": {
+        "binary": "delta-trip-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 4,
+        "public_tool_count": 4,
+        "auth_type": "none",
+        "env_vars": [],
+        "mcp_ready": "full",
+        "spec_format": "internal"
+      }
+    },
+    {
       "name": "digg",
       "category": "media-and-entertainment",
       "api": "Digg AI",
