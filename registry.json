@@ -2926,10 +2926,6 @@
       "path": "library/other/elezioni-sicilia",
       "printer": "aborruso",
       "printer_name": "aborruso",
-      "creator": {
-        "handle": "aborruso",
-        "name": "aborruso"
-      },
       "mcp": {
         "binary": "elezioni-sicilia-pp-mcp",
         "transports": [
