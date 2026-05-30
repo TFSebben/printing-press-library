@@ -38,15 +38,18 @@ func newYoutubeVideosRelatedCmd(flags *rootFlags) *cobra.Command {
 	var sameChannelOnly bool
 
 	cmd := &cobra.Command{
-		Use:         "videos-related <videoId>",
+		Use:         "videos-related <videoId|url>",
 		Short:       "Find related videos via topic + channel + tag overlap (heuristic; replaces deprecated relatedToVideoId)",
-		Example:     "  youtube-pp-cli youtube videos-related dQw4w9WgXcQ --limit 10",
+		Example:     "  youtube-pp-cli youtube videos-related dQw4w9WgXcQ --limit 10\n  youtube-pp-cli youtube videos-related 'https://youtu.be/dQw4w9WgXcQ' --limit 10",
 		Annotations: map[string]string{"mcp:read-only": "true"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) == 0 {
 				return cmd.Help()
 			}
-			videoID := args[0]
+			videoID := parseVideoID(strings.TrimSpace(args[0]))
+			if videoID == "" {
+				return usageErr(fmt.Errorf("could not extract a video ID from %q", args[0]))
+			}
 
 			if dryRunOK(flags) {
 				fmt.Fprintf(cmd.ErrOrStderr(), "GET /youtube/v3/videos?id=%s&part=snippet,topicDetails\n", videoID)
