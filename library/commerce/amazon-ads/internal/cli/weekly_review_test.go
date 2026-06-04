@@ -47,6 +47,23 @@ func TestWeeklyReviewVerifySkipsStaleKeywordBid(t *testing.T) {
 	}
 }
 
+func TestWeeklyReviewVerificationUsesTopLevelFields(t *testing.T) {
+	t.Parallel()
+	raw := json.RawMessage(`{"metadata":{"bid":1.20,"campaignId":"wrong"},"bid":1.50,"campaignId":"c1"}`)
+	if !jsonNumberMatches(raw, "bid", 1.50) {
+		t.Fatalf("jsonNumberMatches did not use top-level bid")
+	}
+	if jsonNumberMatches(raw, "bid", 1.20) {
+		t.Fatalf("jsonNumberMatches matched nested bid")
+	}
+	if !jsonStringMatches(raw, "campaignId", "c1") {
+		t.Fatalf("jsonStringMatches did not use top-level campaignId")
+	}
+	if jsonStringMatches(raw, "campaignId", "wrong") {
+		t.Fatalf("jsonStringMatches matched nested campaignId")
+	}
+}
+
 func TestWeeklyReviewCurrencyFlag(t *testing.T) {
 	t.Parallel()
 	root := RootCmd()
