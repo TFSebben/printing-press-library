@@ -63,22 +63,22 @@ func openBrowser(parent context.Context, opts Options, visible bool) (*chromedpB
 		allocCtx, allocCancel = chromedp.NewRemoteAllocator(parent,
 			fmt.Sprintf("http://127.0.0.1:%d", opts.CDPPort))
 	} else {
-		xPos := "-32000"
-		if visible {
-			xPos = "0"
-		}
 		execOpts := append(chromedp.DefaultExecAllocatorOptions[:],
 			chromedp.Flag("headless", false),
 			chromedp.UserDataDir(opts.UserDataDir),
 			chromedp.Flag("remote-debugging-port", fmt.Sprintf("%d", opts.CDPPort)),
-			chromedp.Flag("window-position", xPos+",-32000"),
 			chromedp.Flag("window-size", "1280,900"),
 			chromedp.Flag("no-first-run", true),
 			chromedp.Flag("no-default-browser-check", true),
 			chromedp.Flag("disable-search-engine-choice-screen", true),
 		)
+		// Position once based on visibility: a visible solve sits at 0,0; a
+		// hidden one parks fully off-screen. (Previously set twice, with the
+		// first assignment dead when visible.)
 		if visible {
 			execOpts = append(execOpts, chromedp.Flag("window-position", "0,0"))
+		} else {
+			execOpts = append(execOpts, chromedp.Flag("window-position", "-32000,-32000"))
 		}
 		allocCtx, allocCancel = chromedp.NewExecAllocator(parent, execOpts...)
 	}

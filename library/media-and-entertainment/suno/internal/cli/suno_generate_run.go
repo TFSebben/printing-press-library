@@ -15,6 +15,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
@@ -99,7 +100,14 @@ func needsCaptchaSolve(err error, tokenWasNil bool) bool {
 	if !tokenWasNil || err == nil {
 		return false
 	}
-	return strings.Contains(strings.ToLower(err.Error()), "returned http 500")
+	// A null-token submit that 500s means the hCaptcha token is required.
+	// Check the numeric status via the typed error rather than the prose, so a
+	// future APIError.Error() format change can't silently disable this path.
+	var apiErr *client.APIError
+	if errors.As(err, &apiErr) {
+		return apiErr.StatusCode == http.StatusInternalServerError
+	}
+	return false
 }
 
 // captchaAction is the decision for how runGenerationFlow handles a failed

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/mvanhorn/printing-press-library/library/media-and-entertainment/suno/internal/captcha"
+	"github.com/mvanhorn/printing-press-library/library/media-and-entertainment/suno/internal/client"
 	"github.com/spf13/cobra"
 )
 
@@ -23,7 +24,7 @@ func (s stubSolver) Solve(_ context.Context, _ captcha.Options) (string, error) 
 
 func TestCaptchaGateAction(t *testing.T) {
 	gateErr := errors.New(`generate returned http 422: {"detail":"token_validation_failed"}`)
-	nullToken500 := errors.New("generate returned http 500: server_error")
+	nullToken500 := &client.APIError{Method: "POST", Path: "/api/generate/v2-web/", StatusCode: 500, Body: "server_error"}
 	otherErr := errors.New("generate returned http 503: service unavailable")
 
 	cases := []struct {

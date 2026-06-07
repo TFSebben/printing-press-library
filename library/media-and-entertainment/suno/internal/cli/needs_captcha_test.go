@@ -5,11 +5,13 @@ package cli
 import (
 	"errors"
 	"testing"
+
+	"github.com/mvanhorn/printing-press-library/library/media-and-entertainment/suno/internal/client"
 )
 
 func TestNeedsCaptchaSolve(t *testing.T) {
 	tokenVal := errors.New(`POST /api/generate/v2-web/ returned HTTP 422: {"error_type":"token_validation_failed"}`)
-	server500 := errors.New(`POST /api/generate/v2-web/ returned HTTP 500: {"error_type":"server_error"}`)
+	server500 := &client.APIError{Method: "POST", Path: "/api/generate/v2-web/", StatusCode: 500, Body: `{"error_type":"server_error"}`}
 	client400 := errors.New(`POST /api/generate/v2-web/ returned HTTP 400: bad request`)
 
 	cases := []struct {
