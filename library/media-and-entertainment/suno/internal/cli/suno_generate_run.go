@@ -149,21 +149,23 @@ func captchaGateEnvelope() map[string]any {
 	}
 }
 
-// captchaGateError surfaces the adaptive hCaptcha gate for the passive path:
-// the solver was not used (--no-captcha) and the gate did not reopen within
-// --gate-timeout. In JSON/agent mode it writes captchaGateEnvelope to stdout;
-// it always returns the prose usage error (exit 2). Distinct from
+// captchaGateError surfaces the adaptive hCaptcha gate for the suppressed path:
+// the piloted-Chrome solver was deliberately not used (--no-captcha), either
+// reporting the gate immediately or after a passive --wait-for-gate backoff
+// failed to clear it. In JSON/agent mode it writes captchaGateEnvelope to
+// stdout; it always returns the prose usage error (exit 2). Distinct from
 // captchaGateFailure, which reports a failed solver attempt.
 func captchaGateError(cmd *cobra.Command, flags *rootFlags) error {
 	if flags != nil && flags.asJSON {
 		_ = json.NewEncoder(cmd.OutOrStdout()).Encode(captchaGateEnvelope())
 	}
 	return usageErr(fmt.Errorf(
-		"Suno required an hCaptcha token for this generation.\n" +
-			"      Suno gates generation adaptively; this request was challenged and the\n" +
-			"      gate did not reopen within --gate-timeout. Options:\n" +
+		"Suno's hCaptcha gate is active and the CLI did not solve it.\n" +
+			"      The piloted-Chrome solver was not launched (you passed --no-captcha,\n" +
+			"      or the adaptive gate did not reopen before --gate-timeout). Options:\n" +
 			"        --token <hcaptcha-token>   (e.g. solved via 2Captcha)\n" +
-			"        drop --no-captcha to let the CLI solve it via piloted Chrome."))
+			"        drop --no-captcha          (let the CLI solve it via piloted Chrome)\n" +
+			"        --wait-for-gate            (back off and retry until the gate reopens)"))
 }
 
 // gateRetryConfig parameterizes retryOnGate. now/sleep are injectable so the
@@ -486,16 +488,19 @@ func runGenerationFlow(cmd *cobra.Command, flags *rootFlags, body sunoGenerateBo
 				return classifyAPIError(err, flags)
 			}
 		case captchaSuppressed:
-			// --no-captcha: never launch the solver.
-			if !cfg.enabled {
-				// No --wait-for-gate: report the gate immediately.
-				return captchaGateFailure(cmd, flags)
+			// --no-captcha: never launch the solver. With --wait-for-gate,
+			// passively back off and retry until the gate reopens or
+			// --gate-timeout elapses (upstream #1027 behavior, preserved for
+			// headless agents); without it, report the gate from the first
+			// attempt. Either way the terminal is captchaGateError — the solver
+			// was deliberately suppressed, so its envelope/hint (drop
+			// --no-captcha, supply --token, or --wait-for-gate) is the accurate,
+			// actionable one, never captchaGateFailure's "tried the solver" prose.
+			if cfg.enabled {
+				resp, err = retryOnGate(ctx, cfg, submit)
 			}
-			// --no-captcha + --wait-for-gate: passive, no-browser backoff —
-			// upstream #1027 behavior, preserved for headless agents.
-			resp, err = retryOnGate(ctx, cfg, submit)
 			if err != nil {
-				if isCaptchaRequired(err) {
+				if needsCaptchaSolve(err, tokenWasNil) {
 					return captchaGateError(cmd, flags)
 				}
 				return classifyAPIError(err, flags)
