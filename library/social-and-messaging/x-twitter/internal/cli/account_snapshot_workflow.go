@@ -66,7 +66,7 @@ func newNovelAccountSnapshotCmd(flags *rootFlags) *cobra.Command {
 		},
 	}
 	cmd.Flags().StringVar(&dbPath, "db", "", "Path to the local database")
-	cmd.Flags().StringVar(&include, "include", "profile,recent,metrics", "Comma-separated sections: profile,recent,metrics,pinned,raw")
+	cmd.Flags().StringVar(&include, "include", "profile,recent,metrics,pinned", "Comma-separated sections: profile,recent,metrics,pinned,raw")
 	cmd.Flags().IntVar(&recent, "recent", 20, "Number of recent posts to include when recent is enabled")
 	cmd.Flags().BoolVar(&live, "live", false, "Bypass local lookup for account/profile data")
 	cmd.Flags().StringVar(&format, "format", "json", "Output format: json or markdown")
@@ -76,7 +76,7 @@ func newNovelAccountSnapshotCmd(flags *rootFlags) *cobra.Command {
 func buildAccountSnapshot(cmd *cobra.Command, flags *rootFlags, input, dbPath, mode, include string, recent int) (*accountSnapshotResult, error) {
 	sections := parseIncludeSet(include)
 	if len(sections) == 0 {
-		sections = parseIncludeSet("profile,recent,metrics")
+		sections = parseIncludeSet("profile,recent,metrics,pinned")
 	}
 	profile, err := resolveAccountProfile(cmd, flags, input, dbPath, mode, sections["raw"])
 	if err != nil {

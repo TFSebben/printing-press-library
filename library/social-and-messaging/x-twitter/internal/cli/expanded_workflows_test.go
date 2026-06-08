@@ -151,6 +151,21 @@ func TestTimelineAndBriefMarkdownWriters(t *testing.T) {
 	}
 }
 
+func TestFilterRecordsSince(t *testing.T) {
+	records := []*resolvedPostRecord{
+		{TweetID: "old", CreatedAt: "2026-01-01T00:00:00Z"},
+		{TweetID: "new", CreatedAt: "2026-02-01T00:00:00Z"},
+		{TweetID: "unknown"},
+	}
+	filtered, err := filterRecordsSince(records, "2026-01-15")
+	if err != nil {
+		t.Fatalf("filterRecordsSince returned error: %v", err)
+	}
+	if len(filtered) != 2 || filtered[0].TweetID != "new" || filtered[1].TweetID != "unknown" {
+		t.Fatalf("filtered = %+v", filtered)
+	}
+}
+
 func testCommand() *cobra.Command {
 	cmd := &cobra.Command{}
 	cmd.SetContext(context.Background())

@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -135,6 +136,13 @@ func buildTimelineExport(cmd *cobra.Command, flags *rootFlags, dbPath, mode stri
 	} else {
 		result.Source = "local"
 	}
+	records, err = filterRecordsSince(records, since)
+	if err != nil {
+		return result, err
+	}
+	if len(records) > limit {
+		records = records[:limit]
+	}
 	for _, rec := range records {
 		result.Items = append(result.Items, collectionItemFromPost(rec, ""))
 	}
@@ -199,4 +207,26 @@ func writeTimelineExport(w io.Writer, result timelineExportResult, format string
 	default:
 		return usageErr(fmt.Errorf("invalid --format %q: expected markdown, json, or jsonl", format))
 	}
+}
+
+func filterRecordsSince(records []*resolvedPostRecord, since string) ([]*resolvedPostRecord, error) {
+	start, ok, err := sinceStartTime(since)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return records, nil
+	}
+	out := records[:0]
+	for _, rec := range records {
+		if rec == nil || rec.CreatedAt == "" {
+			out = append(out, rec)
+			continue
+		}
+		created, err := time.Parse(time.RFC3339, rec.CreatedAt)
+		if err != nil || !created.Before(start) {
+			out = append(out, rec)
+		}
+	}
+	return out, nil
 }
