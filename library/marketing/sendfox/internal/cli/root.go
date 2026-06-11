@@ -145,8 +145,20 @@ func isCobraUsageError(err error) bool {
 func newRootCmd(flags *rootFlags) *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   "sendfox-pp-cli",
-		Short: "Manage sendfox resources via the sendfox API",
-		Long: `Manage sendfox resources via the sendfox API.
+		Short: "Operate SendFox contacts, lists, campaigns, and launch handoffs",
+		Long: `SendFox CLI for agents and operators: contact/list administration, campaign reads,
+audience hygiene reports, CSV reconciliation, launch checklists, signup-form handoffs,
+webhook setup packets, and a machine-readable public API capability matrix.
+
+Highlights beyond raw SendFox endpoints:
+  • capabilities              See exactly which resources are writable in the documented public API.
+  • workflow account-snapshot One account packet across /me, lists, contacts, and campaigns.
+  • workflow hygiene-report   Find invalid emails, duplicate emails, and list-membership gaps.
+  • workflow launch-plan      Generate a safe launch checklist without faking campaign write APIs.
+  • contacts audit-csv        Validate subscriber CSVs before importing.
+  • contacts reconcile-csv    Compare a CSV against live contacts and emit create/skip actions.
+  • forms generate            Generate a signup-form/server-proxy handoff.
+  • webhooks handoff          Generate dashboard setup instructions for webhook receivers.
 
 Add --agent to any command for JSON output + non-interactive mode.
 Run 'sendfox-pp-cli doctor' to verify auth and connectivity.`,
@@ -248,6 +260,8 @@ Run 'sendfox-pp-cli doctor' to verify auth and connectivity.`,
 	rootCmd.AddCommand(newAnalyticsCmd(flags))
 	rootCmd.AddCommand(newWorkflowCmd(flags))
 	rootCmd.AddCommand(newFormsCmd(flags))
+	rootCmd.AddCommand(newWebhooksCmd(flags))
+	rootCmd.AddCommand(newCapabilitiesCmd(flags))
 	rootCmd.AddCommand(newAPICmd(flags))
 	rootCmd.AddCommand(newMePromotedCmd(flags))
 	rootCmd.AddCommand(newUnsubscribePromotedCmd(flags))

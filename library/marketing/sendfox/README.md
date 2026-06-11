@@ -1,6 +1,6 @@
 # SendFox CLI
 
-Manage SendFox contacts, lists, campaigns, audience snapshots, bulk imports, and signup-form integration handoffs from the terminal.
+Operate SendFox contacts, lists, campaign reads, audience hygiene, CSV reconciliation, launch checklists, signup-form handoffs, webhook setup packets, and public API capability checks from the terminal.
 
 ## Install
 
@@ -146,6 +146,12 @@ Run `sendfox-pp-cli --help` for the full command reference and flag list.
 
 ## Commands
 
+### capabilities
+
+Documented public API support matrix
+
+- **`sendfox-pp-cli capabilities`** - Show which SendFox resources support list/get/create/update/delete and where dashboard handoffs are required
+
 ### campaigns
 
 Campaign reads
@@ -162,6 +168,8 @@ Contacts and subscription state
 - **`sendfox-pp-cli contacts list`** - List contacts or find a contact by email
 - **`sendfox-pp-cli contacts onboard`** - Create a contact and attach list memberships in one automation-aware flow
 - **`sendfox-pp-cli contacts import-csv`** - Bulk-create contacts from CSV behind a dry-run/--yes safety gate
+- **`sendfox-pp-cli contacts audit-csv`** - Validate subscriber CSVs for invalid and duplicate emails before any mutation
+- **`sendfox-pp-cli contacts reconcile-csv`** - Compare a CSV against live contacts and emit create/skip actions
 
 ### forms
 
@@ -184,6 +192,14 @@ Compound SendFox workflows for agents
 - **`sendfox-pp-cli workflow account-snapshot`** - Summarize account, list, contact, and campaign state
 - **`sendfox-pp-cli workflow audience-map`** - Map contacts to lists and surface segmentation gaps
 - **`sendfox-pp-cli workflow campaign-digest`** - Summarize campaign count, status mix, and recency
+- **`sendfox-pp-cli workflow hygiene-report`** - Find duplicate emails, invalid emails, status mix, and list-membership gaps
+- **`sendfox-pp-cli workflow launch-plan`** - Generate a safe SendFox list-launch checklist and exact next CLI/dashboard steps
+
+### webhooks
+
+Generate SendFox webhook/dashboard handoffs
+
+- **`sendfox-pp-cli webhooks handoff`** - Generate dashboard setup and handler-contract packets for SendFox webhook receivers
 
 ### me
 
@@ -200,12 +216,18 @@ Manage unsubscribe
 
 ## Unique Features
 
+- **`capabilities`** — machine-readable API support matrix, so agents do not invent unsupported SendFox campaign/webhook write calls.
 - **`workflow account-snapshot`** — one read-only SendFox operating packet across account, lists, contacts, and campaigns. Use this before planning campaigns or auditing account state.
 - **`workflow audience-map`** — list membership map with contacts that are not attached to any list, useful for cleanup and automation-trigger checks.
 - **`workflow campaign-digest`** — status-count and recent-campaign digest without hand-rolling campaign list parsing.
+- **`workflow hygiene-report`** — live hygiene report for duplicate/invalid emails, contact status mix, and contacts without lists.
+- **`workflow launch-plan`** — safe launch checklist that validates the list, emits exact next commands, and explicitly keeps campaign creation/sending in the dashboard because the public docs expose campaign reads only.
+- **`contacts audit-csv`** — preflight CSV validation for duplicate and invalid subscriber emails before any SendFox mutation.
+- **`contacts reconcile-csv`** — compares a CSV to live contacts, then returns create/skip actions for agent review.
 - **`contacts onboard`** — one command to create a subscriber and attach list IDs, with `--dry-run --agent` showing the exact request that may trigger list automations.
 - **`contacts import-csv`** — guarded bulk importer for `email,first_name,last_name` CSVs; live runs require `--yes` after dry-run review.
 - **`forms generate`** — creates an embeddable HTML signup form plus explicit server-proxy note so browser code never leaks the bearer token.
+- **`webhooks handoff`** — dashboard setup packet and receiver contract for webhook installs, without pretending there is public webhook CRUD.
 
 ## Output Formats
 

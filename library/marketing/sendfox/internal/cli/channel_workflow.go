@@ -24,6 +24,8 @@ func newWorkflowCmd(flags *rootFlags) *cobra.Command {
 	cmd.AddCommand(newWorkflowAccountSnapshotCmd(flags))
 	cmd.AddCommand(newWorkflowAudienceMapCmd(flags))
 	cmd.AddCommand(newWorkflowCampaignDigestCmd(flags))
+	cmd.AddCommand(newWorkflowHygieneReportCmd(flags))
+	cmd.AddCommand(newWorkflowLaunchPlanCmd(flags))
 
 	return cmd
 }

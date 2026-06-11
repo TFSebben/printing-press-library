@@ -1,6 +1,6 @@
 ---
 name: pp-sendfox
-description: "Printing Press CLI for SendFox: contacts, lists, campaigns, audience snapshots, CSV imports, and signup-form handoffs."
+description: "Printing Press CLI for SendFox: contacts, lists, campaign reads, audience hygiene, CSV reconciliation, launch plans, signup-form handoffs, webhook packets, and capability checks."
 author: "cathrynlavery"
 license: "Apache-2.0"
 argument-hint: "<command> [args] | install cli|mcp"
@@ -37,9 +37,12 @@ go install github.com/mvanhorn/printing-press-library/library/marketing/sendfox/
 
 If `--version` reports "command not found" after install, the runtime cannot see the binary directory on `$PATH`. Do not proceed with skill commands until verification succeeds.
 
-Manage SendFox contacts, lists, campaigns, audience snapshots, bulk imports, and signup-form integration handoffs from the terminal.
-
+Operate SendFox contacts, lists, campaign reads, audience hygiene, CSV reconciliation, launch checklists, signup-form handoffs, webhook setup packets, and public API capability checks from the terminal.
 ## Command Reference
+
+**capabilities** — Documented public API support matrix
+
+- `sendfox-pp-cli capabilities` — Show which SendFox resources support list/get/create/update/delete and where dashboard handoffs are required
 
 **campaigns** — Campaign reads
 
@@ -53,6 +56,8 @@ Manage SendFox contacts, lists, campaigns, audience snapshots, bulk imports, and
 - `sendfox-pp-cli contacts list` — List contacts or find a contact by email
 - `sendfox-pp-cli contacts onboard` — Create a contact and attach list memberships in one automation-aware flow
 - `sendfox-pp-cli contacts import-csv` — Bulk-create contacts from CSV behind a dry-run/--yes safety gate
+- `sendfox-pp-cli contacts audit-csv` — Validate subscriber CSVs for invalid and duplicate emails before any mutation
+- `sendfox-pp-cli contacts reconcile-csv` — Compare a CSV against live contacts and emit create/skip actions
 
 **forms** — Generate SendFox integration assets
 
@@ -69,6 +74,12 @@ Manage SendFox contacts, lists, campaigns, audience snapshots, bulk imports, and
 - `sendfox-pp-cli workflow account-snapshot` — Summarize account, list, contact, and campaign state
 - `sendfox-pp-cli workflow audience-map` — Map contacts to lists and surface segmentation gaps
 - `sendfox-pp-cli workflow campaign-digest` — Summarize campaign count, status mix, and recency
+- `sendfox-pp-cli workflow hygiene-report` — Find duplicate emails, invalid emails, status mix, and list-membership gaps
+- `sendfox-pp-cli workflow launch-plan` — Generate a safe SendFox list-launch checklist and exact next CLI/dashboard steps
+
+**webhooks** — Generate SendFox webhook/dashboard handoffs
+
+- `sendfox-pp-cli webhooks handoff` — Generate dashboard setup and handler-contract packets for SendFox webhook receivers
 
 **me** — Manage me
 
@@ -86,9 +97,15 @@ Prefer these compound commands before raw endpoint mirrors:
 - `sendfox-pp-cli workflow account-snapshot --agent` — one read-only operating packet across account, lists, contacts, and campaigns.
 - `sendfox-pp-cli workflow audience-map --agent` — list membership map plus contacts without list membership.
 - `sendfox-pp-cli workflow campaign-digest --agent` — campaign status counts and recent campaign rows.
+- `sendfox-pp-cli capabilities --agent` — support matrix that stops agents from inventing unsupported campaign/webhook writes.
+- `sendfox-pp-cli workflow hygiene-report --agent` — live hygiene report for duplicate/invalid emails, contact status mix, and contacts without lists.
+- `sendfox-pp-cli workflow launch-plan --list-id <id> --csv subscribers.csv --agent` — safe launch checklist with exact CLI commands and dashboard-only campaign creation called out explicitly.
+- `sendfox-pp-cli contacts audit-csv --file subscribers.csv --lists <ids> --agent` — validate duplicate/invalid rows before mutation.
+- `sendfox-pp-cli contacts reconcile-csv --file subscribers.csv --lists <ids> --dry-run --agent` — compare CSV rows to live contacts and emit create/skip actions.
 - `sendfox-pp-cli contacts onboard --email <email> --lists <ids> --dry-run --agent` — preview a contact-create request that may trigger list automations; remove `--dry-run` for live execution.
 - `sendfox-pp-cli contacts import-csv --file subscribers.csv --lists <ids> --dry-run --agent` — preview a guarded bulk import; live runs require `--yes` or `--agent`.
 - `sendfox-pp-cli forms generate --list-id <id> --output form.html --agent` — create a signup-form handoff and keep the bearer token server-side.
+- `sendfox-pp-cli webhooks handoff --endpoint <url> --agent` — dashboard setup packet and receiver contract without pretending there is public webhook CRUD.
 
 ### Finding the right command
 
