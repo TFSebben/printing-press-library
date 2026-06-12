@@ -17,7 +17,7 @@
   "spec_checksum": "sha256:d38943c08c80d8b7e5bc369f9adfd28b9875b9a9b33beae5bba66699e7959979",
   "run_id": "20260520-213921",
   "category": "developer-tools",
-  "description": "CLI for managing Framer websites — CMS, canvas, code files, publishing, and site migration. Requires Node.",
+  "description": "CLI for managing Framer websites \u2014 CMS, canvas, code files, publishing, and site migration. Requires Node.",
   "mcp_binary": "framer-pp-mcp",
   "mcp_tool_count": 46,
   "mcp_ready": "full",
@@ -35,7 +35,7 @@
     {
       "name": "Multi-Project Dashboard",
       "command": "dashboard",
-      "description": "Query across all registered Framer projects at once — stale CMS, unpublished changes, collection health"
+      "description": "Query across all registered Framer projects at once \u2014 stale CMS, unpublished changes, collection health"
     },
     {
       "name": "CMS Sync with Dry-Run",
@@ -43,39 +43,14 @@
       "description": "Import CMS content from CSV/JSON/Sheets with a preview diff before committing changes"
     },
     {
-      "name": "Migration Scaffold",
-      "command": "migrate-scrape",
-      "description": "Scrape an existing website and generate a complete Framer migration plan with pages, content, and assets"
-    },
-    {
-      "name": "Silent Failure Guard",
-      "command": "nodes set",
-      "description": "Read-back verification on every mutation catches Framer's silent attribute rejections"
-    },
-    {
       "name": "CMS Schema Diff",
       "command": "cms-schema-diff",
-      "description": "Declare CMS schema in YAML and diff it against the live project — infrastructure-as-code for Framer CMS"
+      "description": "Declare CMS schema in YAML and diff it against the live project \u2014 infrastructure-as-code for Framer CMS"
     },
     {
       "name": "Bulk Asset Pipeline",
       "command": "assets upload",
       "description": "Upload a directory of images and auto-bind them to CMS items by filename-to-slug matching"
-    },
-    {
-      "name": "Publish Guardrails",
-      "command": "publish",
-      "description": "Pre-publish linting catches broken links, missing CMS references, orphan pages, and empty text nodes"
-    },
-    {
-      "name": "Localization Sync",
-      "command": "i18n-push",
-      "description": "Push and pull translations between standard i18n formats (CSV, PO, XLIFF) and Framer's localization system"
-    },
-    {
-      "name": "Redirect Map Generator",
-      "command": "redirects-generate",
-      "description": "Auto-generate redirect map by crawling old site's sitemap and fuzzy-matching to Framer page slugs"
     },
     {
       "name": "CMS Relationship Validator",
@@ -85,12 +60,12 @@
     {
       "name": "Design Token Import",
       "command": "styles-import",
-      "description": "Import CSS variables or Tailwind config as Framer color and text styles — no manual recreation"
+      "description": "Import CSS variables or Tailwind config as Framer color and text styles \u2014 no manual recreation"
     },
     {
       "name": "Code File Sync",
       "command": "code-push",
-      "description": "Edit TSX components locally in your editor, then push to Framer — eliminates copy-paste workflow"
+      "description": "Edit TSX components locally in your editor, then push to Framer \u2014 eliminates copy-paste workflow"
     }
   ]
 }

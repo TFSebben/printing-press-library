@@ -15,7 +15,8 @@
       "command": "${__dirname}/bin/framer-pp-mcp",
       "args": [],
       "env": {
-        "FRAMER_API_KEY": "${user_config.framer_api_key}"
+        "FRAMER_API_KEY": "${user_config.framer_api_key}",
+        "FRAMER_PROJECT_URL": "${user_config.framer_project_url}"
       }
     }
   },
@@ -25,6 +26,13 @@
       "title": "FRAMER_API_KEY",
       "description": "Sets FRAMER_API_KEY for the Framer MCP server.",
       "sensitive": true,
+      "required": true
+    },
+    "framer_project_url": {
+      "type": "string",
+      "title": "FRAMER_PROJECT_URL",
+      "description": "URL of the Framer project to operate on (e.g. https://framer.com/projects/Your-Project--abc123). Required by every live bridge command.",
+      "sensitive": false,
       "required": true
     }
   },

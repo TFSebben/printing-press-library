@@ -29,15 +29,19 @@ func newCodePushCmd(flags *rootFlags) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "code-push <file.tsx>",
-		Short: "Show what a code file push would change (dry-run only for now)",
+		Short: "Push a local TSX/JS code file to the Framer project (or preview changes with --dry-run)",
 		Long: strings.Trim(`
-Read a local TSX/JS file and compare it against the stored version in the local
-SQLite store. Shows a diff of what would change if pushed.
+Read a local TSX/JS file and push it to the Framer project via the Server API
+bridge. Without --dry-run, updates the existing code file (or creates a new one
+if --name doesn't match any stored file) and refreshes the local SQLite store.
 
-Live push requires the WebSocket bridge (not yet implemented). For now, this
-command only previews changes.`, "\n"),
+With --dry-run, compares the local file against the stored version and prints
+the diff without making any API calls.`, "\n"),
 		Example: strings.Trim(`
-  # Preview what would change
+  # Push a local file to the Framer project
+  framer-pp-cli code-push MyComponent.tsx --name MyComponent
+
+  # Preview what would change without pushing
   framer-pp-cli code-push MyComponent.tsx --name MyComponent --dry-run
 
   # JSON output for automation
