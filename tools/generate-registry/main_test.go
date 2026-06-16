@@ -438,10 +438,10 @@ func TestValidateEntries(t *testing.T) {
 			},
 			wantSubstrs: []string{
 				"lawhub: description is empty",
-				// Sources appear in fallback-resolution order: goreleaser
-				// (second tier) is listed before .printing-press.json (third
-				// tier), matching what registryDescription consults.
-				".goreleaser.yaml brews description, .printing-press.json description",
+				// Sources appear in fallback-resolution order: .printing-press.json
+				// description is listed before goreleaser brews, matching what
+				// registryDescription consults.
+				".printing-press.json description, .goreleaser.yaml brews description",
 			},
 		},
 		{

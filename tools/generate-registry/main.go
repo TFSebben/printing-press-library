@@ -482,18 +482,6 @@ func firstNonEmpty(values ...string) string {
 	return ""
 }
 
-func isStaleRegistryDescription(prior string) bool {
-	trimmed := strings.TrimSpace(prior)
-	if trimmed == "" || isBareMarkdownHeading(trimmed) {
-		return false
-	}
-	return strings.HasPrefix(trimmed, "<") ||
-		strings.HasPrefix(trimmed, "Printing Press CLI for ") ||
-		(strings.HasPrefix(trimmed, "Welcome to ") && strings.Contains(trimmed, "API documentation site")) ||
-		strings.HasSuffix(trimmed, "...") ||
-		len(trimmed) > 240
-}
-
 func searchTerms(pp printingPressManifest) []string {
 	var terms []string
 	add := func(value string) {
@@ -573,11 +561,8 @@ func validateEntries(entries []RegistryEntry) []string {
 		}
 		if isBlank(e.Description) {
 			// Source order mirrors the resolution chain in registryDescription:
-			// goreleaser brews is the second tier, .printing-press.json description
-			// is the third. Listing them in resolution order helps a contributor
-			// reading this error understand which file would take precedence if
-			// they populated both.
-			errs = append(errs, fmt.Sprintf("%s: description is empty (sources checked: .goreleaser.yaml brews description, .printing-press.json description)", slug))
+			// .printing-press.json description is checked before goreleaser brews.
+			errs = append(errs, fmt.Sprintf("%s: description is empty (sources checked: .printing-press.json description, .goreleaser.yaml brews description)", slug))
 		}
 		if e.MCP != nil {
 			if isBlank(e.MCP.Binary) {
