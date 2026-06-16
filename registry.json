@@ -7146,6 +7146,59 @@
       }
     },
     {
+      "name": "nhc",
+      "category": "other",
+      "api": "National Hurricane Center",
+      "description": "Credible, real-time National Hurricane Center data for AI agents: active storms, parsed advisories, and tropical outlooks, text-first with link-outs for everything else.",
+      "search_terms": [
+        "nhc",
+        "National Hurricane Center",
+        "nhc-pp-cli",
+        "Credible, real-time National Hurricane Center data for AI agents: active storms, parsed advisories, and tropical outlooks, text-first with link-outs for everything else.",
+        "One-call situational brief",
+        "brief",
+        "One command returns active storms, the tropical outlook, and live NWS tropical alerts as a single payload, with an optional human briefing.",
+        "Flattened storm detail with null-safe link-outs",
+        "storm",
+        "Full detail for one storm: vitals plus every advisory-product URL and GIS link-out, with not-applicable fields returned as explicit null.",
+        "Parsed advisory text (TCP/TCD/TCM)",
+        "advisory",
+        "Fetches and parses the Public Advisory, Forecast Discussion, or Forecast/Marine Advisory into structured fields plus the clean body text, with no HTML scraping by the agent.",
+        "Tropical Weather Outlook with formation odds",
+        "outlook",
+        "Parses the Tropical Weather Outlook for any basin into development areas and 48-hour / 7-day formation chances, with graphic link-outs.",
+        "Storm graphics link-outs with download/open",
+        "graphics",
+        "Returns the cone, track, surge, and wind link-outs for a storm; --download saves the files locally and --open views them.",
+        "ArcGIS MapServer layer link-outs",
+        "gis",
+        "Maps a storm to its ArcGIS REST layer URLs (forecast cone, wind field, watch/warning) for mapping clients. Link-out only; never ingested.",
+        "Credits and safety disclaimer",
+        "credits",
+        "Thanks the people of the National Hurricane Center and states plainly that this is an unofficial tool and NHC/NWS is authoritative."
+      ],
+      "path": "library/other/nhc",
+      "printer": "abe238",
+      "printer_name": "Abe Diaz (@abe238)",
+      "creator": {
+        "handle": "abe238",
+        "name": "Abe Diaz (@abe238)"
+      },
+      "mcp": {
+        "binary": "nhc-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 2,
+        "public_tool_count": 2,
+        "auth_type": "none",
+        "env_vars": [],
+        "mcp_ready": "full",
+        "spec_format": "internal"
+      }
+    },
+    {
       "name": "notion",
       "category": "productivity",
       "api": "Notion",
