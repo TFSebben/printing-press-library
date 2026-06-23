@@ -476,7 +476,30 @@ func sleepContext(ctx context.Context, wait time.Duration) error {
 // do executes an HTTP request. headerOverrides, when non-nil, override global
 // RequiredHeaders for this specific request (used for per-endpoint API versioning).
 func (c *Client) do(ctx context.Context, method, path string, params map[string]string, body any, headerOverrides map[string]string) (json.RawMessage, int, error) {
-	return c.doInternal(ctx, method, path, params, body, headerOverrides, false)
+	return c.doWithSessionRefresh(ctx, method, path, params, body, headerOverrides, false)
+}
+
+// doWithSessionRefresh runs the request and, if Expensify rejects it with an
+// expired session (jsonCode 407) AND device (partner) credentials are
+// available, mints a fresh authToken and retries the request exactly once. This
+// keeps the CLI working for New Expensify users whose session tokens expire
+// quickly, without manual re-auth. Skipped under dry-run and verify mode (no
+// network minting), and never recurses (the retry call goes straight to
+// doInternal).
+func (c *Client) doWithSessionRefresh(ctx context.Context, method, path string, params map[string]string, body any, headerOverrides map[string]string, readOnlyIntent bool) (json.RawMessage, int, error) {
+	data, status, err := c.doInternal(ctx, method, path, params, body, headerOverrides, readOnlyIntent)
+	if err == nil || c.DryRun || cliutil.IsVerifyEnv() || !c.PartnerCredentialsAvailable() {
+		return data, status, err
+	}
+	var apiErr *APIError
+	if !errors.As(err, &apiErr) || apiErr.StatusCode != 407 {
+		return data, status, err
+	}
+	if _, refreshErr := c.RefreshSessionToken(ctx); refreshErr != nil {
+		return data, status, err // keep the original 407 if the refresh failed
+	}
+	fmt.Fprintln(os.Stderr, "session expired; refreshed authToken from device credentials and retrying")
+	return c.doInternal(ctx, method, path, params, body, headerOverrides, readOnlyIntent)
 }
 
 // doRead is do() minus the verify-mode mutating-verb gate. Used by the
@@ -486,7 +509,7 @@ func (c *Client) do(ctx context.Context, method, path string, params map[string]
 // but the verify-mode short-circuit does not fire because the operation
 // does not mutate remote state.
 func (c *Client) doRead(ctx context.Context, method, path string, params map[string]string, body any, headerOverrides map[string]string) (json.RawMessage, int, error) {
-	return c.doInternal(ctx, method, path, params, body, headerOverrides, true)
+	return c.doWithSessionRefresh(ctx, method, path, params, body, headerOverrides, true)
 }
 
 // doInternal is the shared implementation behind do() and doRead(). The

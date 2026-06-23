@@ -91,6 +91,17 @@
       ],
       "validated_outcome": "doctor reports 'OK Auth: configured' after auth login --from-chrome; internal/cliutil credential tests pass.",
       "upstream_issue": ""
+    },
+    {
+      "id": "auth-device-mint",
+      "summary": "`auth login --device` mints a fresh session authToken from device credentials (partnerUserID+partnerUserSecret) via the Authenticate command, and the client auto-refreshes on jsonCode 407 when those creds are configured.",
+      "reason": "New Expensify (NewDot) keeps its live session in IndexedDB, not the www.expensify.com authToken cookie that --from-chrome reads \u2014 so the cookie is a stale classic-session token and 407s. Minting from device creds (the same mechanism the app uses) plus auto-refresh keeps the CLI working without manual re-auth.",
+      "files": [
+        "internal/client/expensify_auth.go",
+        "internal/client/client.go",
+        "internal/cli/auth_login.go"
+      ],
+      "validated_outcome": "auth login --device against a mock Authenticate persists the minted token and doctor reports configured; real Authenticate returns jsonCode 200 for these device creds."
     }
   ]
 }

@@ -19,24 +19,35 @@ import (
 
 func newAuthLoginCmd(flags *rootFlags) *cobra.Command {
 	var fromChrome bool
+	var device bool
 	var token string
 	var debugPort int
 
 	cmd := &cobra.Command{
 		Use:   "login",
-		Short: "Capture an Expensify session authToken (from Chrome or pasted)",
+		Short: "Capture an Expensify session authToken (device creds, Chrome, or pasted)",
 		Long: strings.TrimSpace(`
 Capture the Expensify session authToken and save it to the local config.
 
-  --from-chrome   read the freshest authToken from your already-signed-in Chrome
+  --device        mint a fresh token from device credentials (best for New Expensify)
+  --from-chrome   read the authToken cookie from your already-signed-in Chrome
   --token <t>     provide the token directly (no browser)
 
+--device exchanges your device credentials (the partnerUserID + partnerUserSecret
+pair New Expensify stores under DEVICE_SESSION_CREDENTIALS) for a fresh session
+token via the Authenticate command — the same mechanism the app uses. Set
+EXPENSIFY_PARTNER_USER_ID and EXPENSIFY_PARTNER_USER_SECRET first (DevTools ->
+Application -> IndexedDB -> localforage -> DEVICE_SESSION_CREDENTIALS). Once those
+are set, the CLI also auto-refreshes the session whenever it expires, so you
+never see a stale-token 407 again.
+
 --from-chrome decrypts Chrome's cookie store and picks the most recently updated
-www.expensify.com authToken (including a not-yet-checkpointed value in the WAL
-sidecar), so a fresh browser login is picked up immediately. Chrome 127+
-App-Bound Encryption (v20 cookies) cannot be read this way; paste with --token
-or 'auth set-token' in that case.`),
+www.expensify.com authToken. NOTE: for New Expensify (NewDot) users this cookie
+is a stale classic-session token and will 407 — prefer --device. Chrome 127+
+App-Bound Encryption (v20 cookies) also can't be read this way; use --device,
+--token, or 'auth set-token'.`),
 		Example: strings.Trim(`
+  expensify-pp-cli auth login --device
   expensify-pp-cli auth login --from-chrome
   expensify-pp-cli auth login --token <authToken>`, "\n"),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -49,6 +60,20 @@ or 'auth set-token' in that case.`),
 				return configErr(err)
 			}
 			w := cmd.OutOrStdout()
+
+			if device {
+				c, cErr := flags.newClient()
+				if cErr != nil {
+					return cErr
+				}
+				tok, mErr := c.RefreshSessionToken(cmd.Context())
+				if mErr != nil {
+					return apiErr(mErr)
+				}
+				fmt.Fprintf(w, "Minted a fresh session token (%d chars) from device credentials. Saved to %s\n", len(tok), cfg.Path)
+				fmt.Fprintln(w, "The CLI will auto-refresh this token when it expires.")
+				return nil
+			}
 
 			if token != "" {
 				if err := cfg.SaveCredential(strings.TrimSpace(token)); err != nil {
@@ -78,6 +103,7 @@ or 'auth set-token' in that case.`),
 			return nil
 		},
 	}
+	cmd.Flags().BoolVar(&device, "device", false, "Mint a fresh token from device credentials (EXPENSIFY_PARTNER_USER_ID/SECRET); best for New Expensify")
 	cmd.Flags().BoolVar(&fromChrome, "from-chrome", false, "Read the authToken from your already-signed-in Chrome")
 	cmd.Flags().StringVar(&token, "token", "", "Provide the authToken directly instead of reading Chrome")
 	cmd.Flags().IntVar(&debugPort, "chrome-debug-port", 0, "If set, read cookies from a Chrome started with --remote-debugging-port=<port>")
