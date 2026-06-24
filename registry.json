@@ -8335,6 +8335,12 @@
         "Preflights native iMessage Name and Photo Sharing by checking contact card readiness, local prior-outbound evidence when available, and once-per-day prompt behavior."
       ],
       "path": "library/social-and-messaging/linq",
+      "release": {
+        "cli_name": "linq-pp-cli",
+        "version": "2026.6.1",
+        "released_at": "2026-06-24T00:47:48Z",
+        "source_commit": "79ac14ff1cd4ee8b54eb48ee18675cdf2a731300"
+      },
       "printer": "cathrynlavery",
       "printer_name": "Cathryn Lavery",
       "creator": {
