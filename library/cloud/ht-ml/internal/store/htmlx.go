@@ -125,19 +125,40 @@ func (s *Store) SaveSite(rec SiteRecord, html string, newVersion bool) error {
 	}
 
 	if newVersion && html != "" {
-		var maxV sql.NullInt64
-		if err := s.db.QueryRow(`SELECT MAX(version) FROM ht_versions WHERE site_id = ?`, rec.SiteID).Scan(&maxV); err != nil {
-			return fmt.Errorf("version lookup: %w", err)
-		}
-		next := int(maxV.Int64) + 1
-		if _, err := s.db.Exec(
-			`INSERT OR IGNORE INTO ht_versions (site_id, version, html, created_at) VALUES (?, ?, ?, ?)`,
-			rec.SiteID, next, html, now,
-		); err != nil {
-			return fmt.Errorf("save version: %w", err)
+		if err := s.appendSiteVersion(rec.SiteID, html, now); err != nil {
+			return err
 		}
 	}
 	return nil
+}
+
+// appendSiteVersion computes the next version number and inserts the HTML
+// snapshot atomically. The MAX(version) read and the INSERT are wrapped in a
+// single transaction held under writeMu so two concurrent callers (e.g. a
+// rapid publish followed by a triggered rollback) cannot read the same MAX and
+// both attempt the same (site_id, version) pair — which the INSERT OR IGNORE
+// would otherwise resolve by silently dropping one snapshot. This mirrors the
+// writeMu + transaction pattern used by the generated store writers.
+func (s *Store) appendSiteVersion(siteID, html, createdAt string) error {
+	s.writeMu.Lock()
+	defer s.writeMu.Unlock()
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	var maxV sql.NullInt64
+	if err := tx.QueryRow(`SELECT MAX(version) FROM ht_versions WHERE site_id = ?`, siteID).Scan(&maxV); err != nil {
+		return fmt.Errorf("version lookup: %w", err)
+	}
+	next := int(maxV.Int64) + 1
+	if _, err := tx.Exec(
+		`INSERT OR IGNORE INTO ht_versions (site_id, version, html, created_at) VALUES (?, ?, ?, ?)`,
+		siteID, next, html, createdAt,
+	); err != nil {
+		return fmt.Errorf("save version: %w", err)
+	}
+	return tx.Commit()
 }
 
 // GetSite returns the joined registry + secret record for a site, or (nil, nil)

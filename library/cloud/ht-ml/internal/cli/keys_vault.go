@@ -88,6 +88,13 @@ func decryptVault(data []byte, passphrase string) ([]byte, error) {
 	if env.Format != vaultFormat {
 		return nil, fmt.Errorf("unrecognized vault format %q", env.Format)
 	}
+	// env.Iterations comes from an untrusted vault file (disaster-recovery and
+	// cross-machine workflows accept vaults from third parties). Bound it so a
+	// pathological count cannot make pbkdf2.Key spin effectively forever.
+	const minIter, maxIter = 100_000, 10_000_000
+	if env.Iterations < minIter || env.Iterations > maxIter {
+		return nil, fmt.Errorf("vault iteration count %d is outside the accepted range [%d, %d]", env.Iterations, minIter, maxIter)
+	}
 	key, err := pbkdf2.Key(sha256.New, passphrase, env.Salt, env.Iterations, 32)
 	if err != nil {
 		return nil, err

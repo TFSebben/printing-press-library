@@ -36,7 +36,7 @@ var secretPatterns = []scanPattern{
 	{"github-fine-grained-token", "high", regexp.MustCompile(`\bgithub_pat_[A-Za-z0-9_]{22,}\b`)},
 	{"slack-token", "high", regexp.MustCompile(`\bxox[baprs]-[A-Za-z0-9-]{10,}\b`)},
 	{"stripe-secret-key", "high", regexp.MustCompile(`\bsk_live_[A-Za-z0-9]{16,}\b`)},
-	{"openai-key", "high", regexp.MustCompile(`\bsk-[A-Za-z0-9]{20,}\b`)},
+	{"openai-key", "high", regexp.MustCompile(`\bsk-(?:proj-|svcacct-|[A-Za-z0-9])[A-Za-z0-9_\-]{20,}\b`)},
 	{"jwt", "high", regexp.MustCompile(`\beyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}\b`)},
 	{"generic-secret-assignment", "high", regexp.MustCompile(`(?i)(?:api[_-]?key|secret|token|passwd|password|access[_-]?key)\s*[:=]\s*['"][A-Za-z0-9_\-\.]{16,}['"]`)},
 }

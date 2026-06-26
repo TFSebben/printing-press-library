@@ -293,6 +293,13 @@ func trimNL(s string) string { return strings.Trim(s, "\n") }
 func resolveAssetFile(root, relativePath string) ([]byte, string, error) {
 	clean := filepath.Clean(relativePath)
 	full := filepath.Join(root, clean)
+	// filepath.Clean normalises ".." segments but does not constrain the result
+	// to root: a reference like "../../.env" resolves outside it. Reject anything
+	// that escapes root rather than reading (and potentially uploading) it.
+	rel, err := filepath.Rel(root, full)
+	if err != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(os.PathSeparator)) {
+		return nil, "", fmt.Errorf("asset path %q escapes root directory %q", relativePath, root)
+	}
 	b, err := os.ReadFile(full)
 	if err != nil {
 		return nil, "", err
