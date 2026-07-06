@@ -6,6 +6,7 @@ package cli
 import (
 	"fmt"
 	"math"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -113,6 +114,7 @@ func newNovelDriftCmd(flags *rootFlags) *cobra.Command {
 				}
 				hits = append(hits, driftTargetHit{EventID: id, Title: titles[id], CurrentPrice: snaps[0].GetInPrice, Target: target, Hit: true})
 			}
+			sort.Slice(hits, func(i, j int) bool { return hits[i].EventID < hits[j].EventID })
 			if len(moved) == 0 && len(hits) == 0 {
 				hintIfUnsynced(cmd, db, "")
 			}
