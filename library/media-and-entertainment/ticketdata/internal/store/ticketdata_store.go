@@ -7,6 +7,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -374,6 +375,51 @@ func (s *Store) PricePoints(ctx context.Context, eventID string) ([]TDPricePoint
 		return nil, fmt.Errorf("ticketdata store price points: %w", err)
 	}
 	return points, nil
+}
+
+// PricePointsForEvents fetches price points for many events in a single query,
+// grouped by event id, so callers ranging over a watchlist avoid an N+1 query.
+func (s *Store) PricePointsForEvents(ctx context.Context, eventIDs []string) (map[string][]TDPricePoint, error) {
+	out := make(map[string][]TDPricePoint, len(eventIDs))
+	if len(eventIDs) == 0 {
+		return out, nil
+	}
+	if err := s.EnsureTicketdataTables(ctx); err != nil {
+		return nil, fmt.Errorf("ticketdata store price points batch: %w", err)
+	}
+	placeholders := make([]string, len(eventIDs))
+	args := make([]any, len(eventIDs))
+	for i, id := range eventIDs {
+		placeholders[i] = "?"
+		args[i] = id
+	}
+	query := `SELECT event_id, get_in_price, inserted_at
+		 FROM td_price_points
+		 WHERE event_id IN (` + strings.Join(placeholders, ",") + `)
+		 ORDER BY event_id, inserted_at ASC`
+	rows, err := s.DB().QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("ticketdata store price points batch: %w", err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var (
+			eventID    sql.NullString
+			getInPrice sql.NullFloat64
+			insertedAt sql.NullString
+		)
+		if err := rows.Scan(&eventID, &getInPrice, &insertedAt); err != nil {
+			return nil, fmt.Errorf("ticketdata store price points batch: %w", err)
+		}
+		out[eventID.String] = append(out[eventID.String], TDPricePoint{
+			GetInPrice: getInPrice.Float64,
+			InsertedAt: insertedAt.String,
+		})
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("ticketdata store price points batch: %w", err)
+	}
+	return out, nil
 }
 
 func (s *Store) UpsertZonePoints(ctx context.Context, eventID string, pts []TDZonePoint) error {

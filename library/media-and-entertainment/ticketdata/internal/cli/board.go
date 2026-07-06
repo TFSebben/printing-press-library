@@ -67,6 +67,15 @@ func newNovelBoardCmd(flags *rootFlags) *cobra.Command {
 				return err
 			}
 
+			eventIDs := make([]string, 0, len(watches))
+			for _, watch := range watches {
+				eventIDs = append(eventIDs, watch.EventID)
+			}
+			pointsByEvent, err := db.PricePointsForEvents(cmd.Context(), eventIDs)
+			if err != nil {
+				return err
+			}
+
 			rows := make([]boardRow, 0, len(watches))
 			for _, watch := range watches {
 				snap, ok := snaps[watch.EventID]
@@ -74,10 +83,7 @@ func newNovelBoardCmd(flags *rootFlags) *cobra.Command {
 					continue
 				}
 				var percentile *float64
-				points, err := db.PricePoints(cmd.Context(), watch.EventID)
-				if err != nil {
-					return err
-				}
+				points := pointsByEvent[watch.EventID]
 				if len(points) >= 2 {
 					lte := 0
 					for _, pt := range points {

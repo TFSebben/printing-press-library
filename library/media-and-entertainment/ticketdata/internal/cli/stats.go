@@ -121,7 +121,12 @@ func buildStatsView(eventID string, points []store.TDPricePoint) statsView {
 	}
 	volatility := math.Sqrt(variance / float64(len(prices)))
 	view.Low, view.High, view.Median = &low, &high, &median
-	view.Current, view.CurrentPercentile, view.Volatility = &current, &currentPercentile, &volatility
+	view.Current, view.Volatility = &current, &volatility
+	// A percentile from a single point is trivially 100 and carries no signal,
+	// so only report it with >=2 points (matching `board`'s guard).
+	if len(prices) >= 2 {
+		view.CurrentPercentile = &currentPercentile
+	}
 	setBestWeekday(&view, weekdayTotals, weekdayCounts)
 	return view
 }
@@ -161,7 +166,7 @@ func printStatsTable(cmd *cobra.Command, view statsView) error {
 	fmt.Fprintln(tw, "EVENT\tPOINTS\tLOW\tHIGH\tMEDIAN\tCURRENT\tPERCENTILE\tVOLATILITY\tBEST WEEKDAY\tAVG")
 	fmt.Fprintf(tw, "%s\t%d\t%.2f\t%.2f\t%.2f\t%.2f\t%.1f\t%.2f\t%s\t%.2f\n",
 		view.EventID, view.Points, *view.Low, *view.High, *view.Median, *view.Current,
-		*view.CurrentPercentile, *view.Volatility, view.BestWeekday, valueOrZero(view.BestWeekdayAvg))
+		valueOrZero(view.CurrentPercentile), *view.Volatility, view.BestWeekday, valueOrZero(view.BestWeekdayAvg))
 	return tw.Flush()
 }
 
