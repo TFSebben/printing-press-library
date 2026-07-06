@@ -2,6 +2,10 @@
 
 This file is maintained by printing-press-library release automation. Do not hand-edit release sections in normal PRs.
 
+## 2026.7.1 - 2026-07-06
+
+- feat(linear): add project-updates create and list commands (#1403).
+
 ## 2026.6.6 - 2026-06-24
 
 - feat(linear): resolve portfolio names for issue writes (#1317).
