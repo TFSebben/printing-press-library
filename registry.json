@@ -8877,9 +8877,9 @@
       "path": "library/project-management/linear",
       "release": {
         "cli_name": "linear-pp-cli",
-        "version": "2026.6.6",
-        "released_at": "2026-06-24T00:04:38Z",
-        "source_commit": "44868dbe28bbadcf62a2855883e31f495e048b8b"
+        "version": "2026.7.1",
+        "released_at": "2026-07-06T20:08:21Z",
+        "source_commit": "5a4877a5b50867888faec0eded0a97b6f6815242"
       },
       "printer": "mvanhorn",
       "printer_name": "Matt Van Horn",
@@ -17183,6 +17183,58 @@
         ],
         "mcp_ready": "full",
         "spec_format": "openapi3"
+      }
+    },
+    {
+      "name": "vagaro",
+      "category": "health",
+      "api": "Vagaro",
+      "description": "Every Vagaro discovery feature, plus the marketplace-wide availability search, price comparison, and local database no Vagaro tool has.",
+      "search_terms": [
+        "vagaro",
+        "vagaro-pp-cli",
+        "Every Vagaro discovery feature, plus the marketplace-wide availability search, price comparison, and local database no Vagaro tool has.",
+        "Cross-business availability search",
+        "find",
+        "Find nearby businesses with a service open soonest, filtered by price, rating, and a date/time window.",
+        "Business comparison",
+        "compare",
+        "Compare named businesses side by side: rating, review count, price range, matching-service price, and next-available.",
+        "Service price distribution",
+        "price-check",
+        "Show the price spread (min/median/max) for a service across a metro and flag who's below median.",
+        "Market overview",
+        "market",
+        "One-shot landscape of a metro: business count, rating distribution, and price ranges by category.",
+        "History-driven rebook",
+        "me rebook",
+        "Re-run your usual: reads your past appointment (business + service + provider) and lists that provider's open slots in a window so you can pick and book.",
+        "Service-menu diff over time",
+        "menu-diff",
+        "Diff a business's service menu across synced snapshots to catch price changes and added/removed services.",
+        "Availability watch",
+        "watch",
+        "Check one business/provider's next-available against a stored baseline and report if a slot opened up sooner."
+      ],
+      "path": "library/health/vagaro",
+      "printer": "tmchow",
+      "printer_name": "Trevin Chow",
+      "creator": {
+        "handle": "tmchow",
+        "name": "Trevin Chow"
+      },
+      "mcp": {
+        "binary": "vagaro-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 6,
+        "public_tool_count": 5,
+        "auth_type": "composed",
+        "env_vars": [],
+        "mcp_ready": "partial",
+        "spec_format": "internal"
       }
     },
     {
