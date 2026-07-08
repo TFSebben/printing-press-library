@@ -111,9 +111,9 @@ These capabilities aren't available in any other tool for this API.
   ```bash
   framer-pp-cli cms-sync ./blog-posts.csv --collection Blog --dry-run --json
   ```
-- **`nodes set`** — Read-back verification on every mutation catches Framer's silent attribute rejections
+- **`nodes set`** — Set node attributes through the live Framer bridge
 
-  _When an agent sets node attributes and needs to know whether they actually took effect_
+  _When an agent needs to update canvas node attributes by ID_
 
   ```bash
   framer-pp-cli nodes set abc123 --json --dry-run
@@ -199,7 +199,7 @@ These talk to the Framer Server API through the Node.js bridge. They require `FR
 
 - `framer-pp-cli nodes get <id>` — Get a node by ID with all attributes
 - `framer-pp-cli nodes children <id>` — List children of a node
-- `framer-pp-cli nodes set <id>` — Set attributes on a node (with read-back verification)
+- `framer-pp-cli nodes set <id>` — Set attributes on a node
 - `framer-pp-cli nodes move <id>` — Move a node to a new parent / reorder by index
 - `framer-pp-cli nodes clone <id>` — Clone a node
 - `framer-pp-cli nodes create-frame` — Create a new frame node on the canvas
@@ -314,7 +314,7 @@ framer-pp-cli redirects-generate --dry-run --json
 
 Show the current planned-stub response for redirect map generation
 
-### Pre-publish health check
+### Create a preview deployment
 
 ```bash
 framer-pp-cli publish --json

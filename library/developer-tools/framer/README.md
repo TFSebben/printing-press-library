@@ -199,16 +199,16 @@ These capabilities aren't available in any other tool for this API.
   ```bash
   framer-pp-cli cms-sync ./blog-posts.csv --collection Blog --dry-run --json
   ```
-- **`nodes set`** — Read-back verification on every mutation catches Framer's silent attribute rejections
+- **`nodes set`** — Set node attributes through the live Framer bridge
 
-  _When an agent sets node attributes and needs to know whether they actually took effect_
+  _When an agent needs to update canvas node attributes by ID_
 
   ```bash
   framer-pp-cli nodes set abc123 --attr width=400 --json
   ```
-- **`publish`** — Pre-publish linting catches broken links, missing CMS references, orphan pages, and empty text nodes
+- **`publish`** — Create a preview deployment, then optionally promote it to production
 
-  _When an agent is about to deploy and needs confidence that the site won't ship with broken references_
+  _When an agent needs a shareable preview URL or an explicit production deploy_
 
   ```bash
   framer-pp-cli publish --json
@@ -281,7 +281,7 @@ Live operations run through the Node bridge and need `FRAMER_API_KEY` + `FRAMER_
 
 - **`framer-pp-cli nodes get <id>`** - Get a node by ID with all attributes
 - **`framer-pp-cli nodes children <id>`** - Get the child nodes of a node
-- **`framer-pp-cli nodes set <id> --attr key=value`** - Set node attributes (with read-back verification)
+- **`framer-pp-cli nodes set <id> --attr key=value`** - Set node attributes
 - **`framer-pp-cli nodes create-frame`** - Create a new frame node
 - **`framer-pp-cli nodes clone <id>`** - Clone a node
 - **`framer-pp-cli nodes remove <id>`** - Remove a node
@@ -406,7 +406,7 @@ Environment variables:
 ### API-specific
 
 - **Connection timeout or 'WebSocket error'** — Verify `FRAMER_API_KEY` and `FRAMER_PROJECT_URL` are set, and that Node.js 18+ is installed: `framer-pp-cli doctor`
-- **Node attributes silently rejected** — `nodes set` reads each node back after mutating and reports which attributes Framer dropped: `framer-pp-cli nodes set <id> --attr key=value`
+- **Node attributes silently rejected** — `nodes set` returns the bridge response, but it does not perform a follow-up read-back comparison. Run `framer-pp-cli nodes get <id>` after mutation when you need to confirm Framer persisted an attribute.
 - **'framer-api not found' error** — `doctor` reports whether the Node bridge can start; ensure Node.js 18+ is on your `PATH` and re-run `framer-pp-cli doctor`
 - **CMS sync creates duplicates** — Ensure your CSV has a unique 'slug' column matching existing item slugs for upsert behavior
 
