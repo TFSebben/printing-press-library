@@ -1,6 +1,11 @@
 package opentable
 
-import "testing"
+import (
+	"encoding/base64"
+	"testing"
+
+	"github.com/chromedp/cdproto/network"
+)
 
 func TestExtractSha256Hash(t *testing.T) {
 	fresh := "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
@@ -36,5 +41,27 @@ func TestExtractSha256Hash(t *testing.T) {
 				t.Fatalf("extractSha256Hash(%q) = %q, want %q", tc.body, got, tc.want)
 			}
 		})
+	}
+}
+
+func TestHashFromRequestPostDataEntries(t *testing.T) {
+	fresh := "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+	body := `{"operationName":"RestaurantsAvailability","extensions":{"persistedQuery":{"sha256Hash":"` + fresh + `"}}}`
+	req := &network.Request{
+		PostDataEntries: []*network.PostDataEntry{
+			{Bytes: base64.StdEncoding.EncodeToString([]byte(body[:40]))},
+			{Bytes: base64.StdEncoding.EncodeToString([]byte(body[40:]))},
+		},
+	}
+	if got := hashFromRequest(req); got != fresh {
+		t.Fatalf("hashFromRequest() = %q, want %q", got, fresh)
+	}
+}
+
+func TestHashFromPostDataFallback(t *testing.T) {
+	fresh := "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+	body := `{"operationName":"RestaurantsAvailability","extensions":{"persistedQuery":{"sha256Hash":"` + fresh + `"}}}`
+	if got := hashFromPostData([]byte(body)); got != fresh {
+		t.Fatalf("hashFromPostData() = %q, want %q", got, fresh)
 	}
 }

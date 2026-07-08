@@ -192,20 +192,31 @@ func (c *Client) ChromeAvailability(
 
 	// Capture state for the response listener
 	type slotCapture struct {
-		mu      sync.Mutex
-		body    []byte
-		status  int
-		err     error
-		reqHash string
-		done    chan struct{}
+		mu       sync.Mutex
+		body     []byte
+		status   int
+		err      error
+		reqHash  string
+		hashSeen bool
+		hashDone chan struct{}
+		done     chan struct{}
 	}
-	cap := &slotCapture{done: make(chan struct{})}
+	cap := &slotCapture{hashDone: make(chan struct{}), done: make(chan struct{})}
 	closed := false
 	closeOnce := func() {
 		cap.mu.Lock()
 		if !closed {
 			closed = true
 			close(cap.done)
+		}
+		cap.mu.Unlock()
+	}
+	hashClosed := false
+	closeHashOnce := func() {
+		cap.mu.Lock()
+		if !hashClosed {
+			hashClosed = true
+			close(cap.hashDone)
 		}
 		cap.mu.Unlock()
 	}
@@ -222,9 +233,27 @@ func (c *Client) ChromeAvailability(
 			}
 			if h := hashFromRequest(e.Request); h != "" {
 				cap.mu.Lock()
+				cap.hashSeen = true
 				cap.reqHash = h
 				cap.mu.Unlock()
+				closeHashOnce()
+				return
 			}
+			cap.mu.Lock()
+			cap.hashSeen = true
+			cap.mu.Unlock()
+			reqID := e.RequestID
+			go func() {
+				body, err := network.GetRequestPostData(reqID).Do(timed)
+				if err == nil {
+					if h := hashFromPostData(body); h != "" {
+						cap.mu.Lock()
+						cap.reqHash = h
+						cap.mu.Unlock()
+					}
+				}
+				closeHashOnce()
+			}()
 		case *network.EventResponseReceived:
 			if e.Response == nil {
 				return
@@ -305,6 +334,15 @@ func (c *Client) ChromeAvailability(
 	// rides in the request, so even a WAF-403'd or timed-out run yields it.
 	// This is what lets the fast direct path self-heal after a bundle rotation.
 	cap.mu.Lock()
+	hashSeen := cap.hashSeen
+	cap.mu.Unlock()
+	if hashSeen {
+		select {
+		case <-cap.hashDone:
+		case <-time.After(500 * time.Millisecond):
+		}
+	}
+	cap.mu.Lock()
 	harvested := cap.reqHash
 	cap.mu.Unlock()
 	if harvested != "" && harvested != currentAvailabilityHash() {
@@ -362,6 +400,10 @@ func hashFromRequest(req *network.Request) string {
 		}
 	}
 	return extractSha256Hash(sb.String())
+}
+
+func hashFromPostData(postData []byte) string {
+	return extractSha256Hash(string(postData))
 }
 
 // extractSha256Hash pulls the persisted-query hash out of a GraphQL POST body
