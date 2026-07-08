@@ -1,6 +1,13 @@
 package cli
 
-import "testing"
+import (
+	"database/sql"
+	"errors"
+	"path/filepath"
+	"testing"
+
+	"github.com/mvanhorn/printing-press-library/library/developer-tools/framer/internal/store"
+)
 
 // TestFlattenStoredCMSItem verifies that a stored item's nested fieldData is
 // unwrapped to a flat map while id/slug are preserved.
@@ -47,6 +54,33 @@ func TestComputeCMSDiff_NoFalseChanges(t *testing.T) {
 	}
 	if len(diff.Added) != 0 || len(diff.Deleted) != 0 {
 		t.Fatalf("expected no add/delete, got added=%d deleted=%d", len(diff.Added), len(diff.Deleted))
+	}
+}
+
+func TestRefreshLocalStoreDeletesMissingCMSItems(t *testing.T) {
+	db, err := store.Open(filepath.Join(t.TempDir(), "data.db"))
+	if err != nil {
+		t.Fatalf("open store: %v", err)
+	}
+	defer db.Close()
+
+	if err := db.Upsert("cms-items", "old", []byte(`{"id":"old","slug":"old","title":"vanished copy"}`)); err != nil {
+		t.Fatalf("upsert stale item: %v", err)
+	}
+	raw := []byte(`{"collections":[],"items":[{"id":"kept","slug":"kept","title":"current copy"}]}`)
+	if err := refreshLocalStore(db, raw); err != nil {
+		t.Fatalf("refreshLocalStore: %v", err)
+	}
+
+	if _, err := db.Get("cms-items", "old"); !errors.Is(err, sql.ErrNoRows) {
+		t.Fatalf("Get stale item err = %v, want sql.ErrNoRows", err)
+	}
+	matches, err := db.Search("vanished", 10, "cms-items")
+	if err != nil {
+		t.Fatalf("search stale item: %v", err)
+	}
+	if len(matches) != 0 {
+		t.Fatalf("stale item search = %q, want no matches", matches)
 	}
 }
 

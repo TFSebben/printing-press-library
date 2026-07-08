@@ -441,7 +441,8 @@ func refreshLocalStore(db *store.Store, raw json.RawMessage) error {
 		return err
 	}
 
-	upsert := func(resourceType string, items []json.RawMessage) error {
+	upsert := func(resourceType string, items []json.RawMessage) (map[string]bool, error) {
+		seen := make(map[string]bool)
 		for _, item := range items {
 			var obj map[string]any
 			if json.Unmarshal(item, &obj) != nil {
@@ -454,18 +455,60 @@ func refreshLocalStore(db *store.Store, raw json.RawMessage) error {
 			if id == "" {
 				continue
 			}
+			seen[id] = true
 			dataBytes, _ := json.Marshal(obj)
 			if err := db.Upsert(resourceType, id, json.RawMessage(dataBytes)); err != nil {
+				return nil, err
+			}
+		}
+		return seen, nil
+	}
+
+	collectionIDs, err := upsert("cms-collections", data.Collections)
+	if err != nil {
+		return err
+	}
+	itemIDs, err := upsert("cms-items", data.Items)
+	if err != nil {
+		return err
+	}
+	return deleteMissingCMSRows(db, map[string]map[string]bool{
+		"cms-collections": collectionIDs,
+		"cms-items":       itemIDs,
+	})
+}
+
+func deleteMissingCMSRows(db *store.Store, seenByType map[string]map[string]bool) error {
+	for resourceType, seen := range seenByType {
+		rows, err := db.DB().Query(`SELECT id FROM resources WHERE resource_type = ?`, resourceType)
+		if err != nil {
+			return err
+		}
+		var stale []string
+		for rows.Next() {
+			var id string
+			if err := rows.Scan(&id); err != nil {
+				rows.Close()
+				return err
+			}
+			if !seen[id] {
+				stale = append(stale, id)
+			}
+		}
+		if err := rows.Err(); err != nil {
+			rows.Close()
+			return err
+		}
+		if err := rows.Close(); err != nil {
+			return err
+		}
+		for _, id := range stale {
+			if err := db.Delete(resourceType, id); err != nil {
 				return err
 			}
 		}
-		return nil
 	}
-
-	if err := upsert("cms-collections", data.Collections); err != nil {
-		return err
-	}
-	return upsert("cms-items", data.Items)
+	return nil
 }
 
 func printCMSDiffTable(cmd *cobra.Command, diff cmsSyncDiff) {
