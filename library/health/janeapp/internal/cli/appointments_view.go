@@ -61,8 +61,18 @@ func extractTimeFromKeys(m map[string]any, keys []string) (time.Time, string) {
 		if !ok || s == "" {
 			continue
 		}
-		for _, layout := range []string{time.RFC3339, "2006-01-02T15:04:05", "2006-01-02 15:04:05 -0700", "2006-01-02T15:04:05Z07:00"} {
+		// Offset-carrying formats are absolute — parse as-is.
+		for _, layout := range []string{time.RFC3339, "2006-01-02 15:04:05 -0700"} {
 			if t, err := time.Parse(layout, s); err == nil {
+				return t, s
+			}
+		}
+		// Naive (no offset) formats are wall-clock: interpret in the local zone
+		// to stay consistent with parseFlexibleDate, so conflict-check compares
+		// a local candidate against like-for-like appointment times rather than
+		// a UTC-shifted one and missing a real overlap.
+		for _, layout := range []string{"2006-01-02T15:04:05", "2006-01-02 15:04:05"} {
+			if t, err := time.ParseInLocation(layout, s, time.Local); err == nil {
 				return t, s
 			}
 		}
@@ -167,7 +177,13 @@ func fetchClinicAppointments(ctx context.Context, flags *rootFlags, clinic *Clin
 		if err2 := json.Unmarshal(data, &wrapper); err2 == nil {
 			for _, key := range []string{"appointments", "data", "results"} {
 				if raw, ok := wrapper[key]; ok {
-					_ = json.Unmarshal(raw, &items)
+					// A recognized key whose value isn't an appointment array
+					// (e.g. {"appointments":{"items":[...]}}) must not be
+					// silently swallowed into an empty list — that would hide
+					// bookings from conflict-check just like an unknown wrapper.
+					if err := json.Unmarshal(raw, &items); err != nil {
+						return nil, fmt.Errorf("appointments %q field for clinic %q is not a recognized array shape; refusing to proceed so safety checks don't run on incomplete data: %w", key, clinic.Name, err)
+					}
 					matched = true
 					break
 				}
