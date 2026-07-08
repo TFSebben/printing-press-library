@@ -149,6 +149,9 @@ the diff without making any API calls.`, "\n"),
 			if dryRunOK(flags) {
 				return nil
 			}
+			if diff.Status == "unchanged" {
+				return nil
+			}
 
 			// Live push via bridge
 			bc, err := client.NewBridgeClient()

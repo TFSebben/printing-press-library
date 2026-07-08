@@ -6,7 +6,6 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/mvanhorn/printing-press-library/library/developer-tools/framer/internal/client"
@@ -75,7 +74,7 @@ Requires FRAMER_PROJECT_URL and FRAMER_API_KEY environment variables.`,
 			// Ask for confirmation unless --yes is set.
 			if !flags.yes && !flags.noInput {
 				fmt.Fprint(cmd.ErrOrStderr(), "\nDeploy to production? [y/N] ")
-				reader := bufio.NewReader(os.Stdin)
+				reader := bufio.NewReader(cmd.InOrStdin())
 				answer, _ := reader.ReadString('\n')
 				answer = strings.TrimSpace(strings.ToLower(answer))
 				if answer != "y" && answer != "yes" {
