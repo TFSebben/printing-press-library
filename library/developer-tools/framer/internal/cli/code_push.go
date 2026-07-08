@@ -85,6 +85,7 @@ the diff without making any API calls.`, "\n"),
 				Name:    name,
 				NewSize: len(localContent),
 			}
+			var storedCode map[string]any
 
 			var resolved string
 			var resolveErr error
@@ -104,6 +105,7 @@ the diff without making any API calls.`, "\n"),
 				} else {
 					var obj map[string]any
 					if json.Unmarshal(raw, &obj) == nil {
+						storedCode = obj
 						existingContent := extractCodeContent(obj)
 						diff.OldSize = len(existingContent)
 
@@ -172,9 +174,12 @@ the diff without making any API calls.`, "\n"),
 					"id":      codeFileID,
 					"content": string(localContent),
 				})
-				_, err := bc.Call("code-update", string(arg))
+				result, err := bc.Call("code-update", string(arg))
 				if err != nil {
 					return fmt.Errorf("push failed: %w", err)
+				}
+				if err := upsertCodePushResult(db, codeFileID, name, localContent, result, storedCode); err != nil {
+					return fmt.Errorf("updating local store: %w", err)
 				}
 				fmt.Fprintf(cmd.OutOrStdout(), "Updated %s in Framer (%d bytes pushed, file ID: %s)\n", name, len(localContent), codeFileID)
 			} else {
@@ -187,6 +192,9 @@ the diff without making any API calls.`, "\n"),
 				if err != nil {
 					return fmt.Errorf("create failed: %w", err)
 				}
+				if err := upsertCodePushResult(db, "", name, localContent, result, nil); err != nil {
+					return fmt.Errorf("updating local store: %w", err)
+				}
 				fmt.Fprintf(cmd.OutOrStdout(), "Created %s in Framer: %s\n", name, string(result))
 			}
 
@@ -198,6 +206,39 @@ the diff without making any API calls.`, "\n"),
 	cmd.Flags().StringVar(&dbPath, "db", "", "Database path (default: ~/.local/share/framer-pp-cli/data.db)")
 
 	return cmd
+}
+
+func upsertCodePushResult(db *store.Store, id, name string, content []byte, result json.RawMessage, record map[string]any) error {
+	if record == nil {
+		record = make(map[string]any)
+	}
+	if len(result) > 0 {
+		var bridgeRecord map[string]any
+		if json.Unmarshal(result, &bridgeRecord) == nil {
+			for k, v := range bridgeRecord {
+				record[k] = v
+			}
+		}
+	}
+	if id == "" {
+		if v, ok := record["id"].(string); ok {
+			id = v
+		}
+	}
+	if id == "" {
+		id = name
+	}
+	if _, ok := record["name"].(string); !ok {
+		record["name"] = name
+	}
+	record["id"] = id
+	record["content"] = string(content)
+
+	data, err := json.Marshal(record)
+	if err != nil {
+		return err
+	}
+	return db.Upsert("code", id, json.RawMessage(data))
 }
 
 // extractCodeContent pulls the code content string from a stored code object.

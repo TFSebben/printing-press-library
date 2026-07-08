@@ -101,9 +101,11 @@ Requires FRAMER_PROJECT_URL and FRAMER_API_KEY environment variables.`,
 			}
 			typeDiffs := make(map[string]*diffCounts)
 			upsertedKeys := make(map[resourceKey]bool)
+			syncedTypes := make(map[string]bool)
 
 			// Helper to upsert a batch of resources
 			upsert := func(resourceType string, items []json.RawMessage) error {
+				syncedTypes[resourceType] = true
 				if typeDiffs[resourceType] == nil {
 					typeDiffs[resourceType] = &diffCounts{}
 				}
@@ -178,7 +180,10 @@ Requires FRAMER_PROJECT_URL and FRAMER_API_KEY environment variables.`,
 			// but whose ID was not seen in the response.
 			removedCounts := make(map[string]int)
 			for key := range preSyncMap {
-				if counts[key.ResourceType] > 0 && !upsertedKeys[key] {
+				if syncedTypes[key.ResourceType] && !upsertedKeys[key] {
+					if err := db.Delete(key.ResourceType, key.ID); err != nil {
+						return fmt.Errorf("deleting removed %s %s: %w", key.ResourceType, key.ID, err)
+					}
 					removedCounts[key.ResourceType]++
 				}
 			}

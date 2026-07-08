@@ -118,9 +118,9 @@ These capabilities aren't available in any other tool for this API.
   ```bash
   framer-pp-cli nodes set abc123 --json --dry-run
   ```
-- **`publish`** — Pre-publish linting catches broken links, missing CMS references, orphan pages, and empty text nodes
+- **`publish`** — Create a preview deployment, then optionally promote it to production
 
-  _When an agent is about to deploy and needs confidence that the site won't ship with broken references_
+  _When an agent needs a shareable preview URL or an explicit production deploy_
 
   ```bash
   framer-pp-cli publish --json
@@ -134,9 +134,9 @@ These capabilities aren't available in any other tool for this API.
   ```
 
 ### Migration automation
-- **`migrate-scrape`** — Scrape an existing website and generate a complete Framer migration plan with pages, content, and assets
+- **`migrate-scrape`** — Planned stub for scraping a site into a Framer migration plan
 
-  _When porting an existing site to Framer, this automates the most tedious part of the migration_
+  _Do not use for production migration planning yet; the command reports that this feature is planned_
 
   ```bash
   framer-pp-cli migrate-scrape https://old-site.com --depth 3 --dry-run --json
@@ -148,16 +148,16 @@ These capabilities aren't available in any other tool for this API.
   ```bash
   framer-pp-cli assets upload --dry-run --json
   ```
-- **`i18n-push`** — Push and pull translations between standard i18n formats (CSV, PO, XLIFF) and Framer's localization system
+- **`i18n-push`** — Planned stub for syncing translations between standard i18n formats and Framer localization
 
-  _When an agent manages multi-language sites and needs to sync translations from external translation tools_
+  _Do not use for production translation sync yet; the command reports that this feature is planned_
 
   ```bash
   framer-pp-cli i18n-push translations.csv --format csv --dry-run
   ```
-- **`redirects-generate`** — Auto-generate redirect map by crawling old site's sitemap and fuzzy-matching to Framer page slugs
+- **`redirects-generate`** — Planned stub for generating redirect maps from an old sitemap
 
-  _Every site migration needs redirects — this automates what is otherwise a fully manual spreadsheet task_
+  _Do not use for production redirect generation yet; the command reports that this feature is planned_
 
   ```bash
   framer-pp-cli redirects-generate --old-sitemap https://old-site.com/sitemap.xml --json
@@ -274,10 +274,10 @@ These commands are declared by the spec author and require separate hand-written
 - `framer-pp-cli cms-schema-diff <schema.yaml>` — Compare a local CMS schema definition against live Framer collections
 - `framer-pp-cli cms-validate` — Find broken collection references, orphan items, and circular refs across CMS
 - `framer-pp-cli styles-import <file>` — Import CSS variables or Tailwind config as Framer color and text styles (local preview/dry-run)
-- `framer-pp-cli code-push <file>` — Show what a local TSX file push would change (dry-run only for now)
+- `framer-pp-cli code-push <file>` — Push a local TSX/JS file or preview the change with `--dry-run`
 - `framer-pp-cli code-pull <code_file_id>` — Pull a Framer code file from the local store to a local TSX file
-- `framer-pp-cli redirects-generate` — Auto-generate redirect map from old site sitemap to Framer page slugs
-- `framer-pp-cli i18n-push <translations_file>` — Push translations from CSV, PO, or XLIFF into Framer localization
+- `framer-pp-cli redirects-generate` — Planned stub for redirect map generation
+- `framer-pp-cli i18n-push <translations_file>` — Planned stub for Framer localization sync
 
 ## Recipes
 
@@ -306,13 +306,13 @@ framer-pp-cli code-pull HeroSection --output hero.tsx
 
 Pull a Framer code file to edit locally, then push back with code-push
 
-### Generate migration redirects
+### Preview planned migration redirects
 
 ```bash
 framer-pp-cli redirects-generate --dry-run --json
 ```
 
-Preview redirect map generation from old site sitemap
+Show the current planned-stub response for redirect map generation
 
 ### Pre-publish health check
 

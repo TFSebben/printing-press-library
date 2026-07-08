@@ -381,6 +381,33 @@ func TestResources_CompositeKeyPreservesOverlappingIDs(t *testing.T) {
 	}
 }
 
+func TestDelete_RemovesResourceAndSearchIndex(t *testing.T) {
+	dbPath := filepath.Join(t.TempDir(), "data.db")
+	s, err := Open(dbPath)
+	if err != nil {
+		t.Fatalf("open db: %v", err)
+	}
+	defer s.Close()
+
+	if err := s.Upsert("code", "hero", []byte(`{"id":"hero","name":"Hero","content":"launch banner"}`)); err != nil {
+		t.Fatalf("upsert code: %v", err)
+	}
+	if err := s.Delete("code", "hero"); err != nil {
+		t.Fatalf("delete code: %v", err)
+	}
+
+	if _, err := s.Get("code", "hero"); !errors.Is(err, sql.ErrNoRows) {
+		t.Fatalf("Get deleted row err = %v, want sql.ErrNoRows", err)
+	}
+	matches, err := s.Search("launch", 10, "code")
+	if err != nil {
+		t.Fatalf("search deleted row: %v", err)
+	}
+	if len(matches) != 0 {
+		t.Fatalf("deleted row search = %q, want no matches", matches)
+	}
+}
+
 // Callers detect missing rows via errors.Is(err, sql.ErrNoRows); present
 // rows return the JSON payload with a nil error.
 func TestGet_MissingRowReturnsErrNoRows(t *testing.T) {
