@@ -5924,6 +5924,10 @@
         {
           "handle": "tmchow",
           "name": "Trevin Chow"
+        },
+        {
+          "handle": "omarshahine",
+          "name": "Omar Shahine"
         }
       ],
       "mcp": {
@@ -8739,11 +8743,12 @@
     },
     {
       "name": "juneoven",
-      "category": "food-and-dining",
-      "api": "juneoven",
+      "category": "devices",
+      "api": "June Oven",
       "description": "Every June oven control from the terminal — self-pair, preheat, adjust, watch live telemetry, and cancel, over June's cloud with agent-native JSON.",
       "search_terms": [
         "juneoven",
+        "June Oven",
         "juneoven-pp-cli",
         "Block until preheated",
         "ready",
@@ -8767,7 +8772,13 @@
         "repeat",
         "Save a named mode+temp(+timer) preset in local SQLite and replay it with one word."
       ],
-      "path": "library/food-and-dining/juneoven",
+      "path": "library/devices/juneoven",
+      "release": {
+        "cli_name": "juneoven-pp-cli",
+        "version": "2026.7.1",
+        "released_at": "2026-07-09T21:16:32Z",
+        "source_commit": "fc82aebe80e0a28c86d94feb55720afb22d17c79"
+      },
       "printer": "mvanhorn",
       "printer_name": "Matt Van Horn"
     },
